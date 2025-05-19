@@ -84,7 +84,7 @@ const AddVideo = () => {
       try {
         setUploading(true);
         const res = await axios.post(
-          "https://drivers-hub-eight.vercel.app/api/v1/video/new",
+          "https://real-hero-vkna.vercel.app/api/v1/video/new",
           finalPayload,
           {
             headers: {

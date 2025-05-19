@@ -11,6 +11,6 @@ const store = configureStore({
 });
 
 // export const url = "https://drivers-hub-eight.vercel.app";
-export const url = "https://real-hero-vkna.vercel.app";
+export const url = "http://localhost:4000";
 
 export default store;

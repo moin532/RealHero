@@ -11,6 +11,7 @@ import ProfilePage from "./assets/Profile";
 import NotificationsPage from "./assets/Notification";
 import HelpBanner from "./assets/HelpBanner";
 import NormalFeed from "./videos/NormalFeed";
+import SalahReminder from "./assets/SalahReminder";
 const App = () => {
   const dispatch = useDispatch();
 
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="/my/profile" element={<ProfilePage />} />
         <Route path="/notification" element={<NotificationsPage />} />
         <Route path="/help" element={<HelpBanner />} />
+        <Route path="/salah" element={<SalahReminder />} />
       </Routes>
       {isAuthenticated && <Footer />}
     </Router>

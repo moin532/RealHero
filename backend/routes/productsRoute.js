@@ -18,6 +18,7 @@ const {
 } = require("../controller/myVideoController");
 
 router.route("/video/new").post(authMiddle, createProduct);
+
 router.route("/video/all").get(getAllPRoducts);
 
 router.route("/admin/products").get(authMiddle, getAllAdminPrd);

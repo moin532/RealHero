@@ -2,7 +2,8 @@ const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
-
+const myVideo = require("../models/MyVideoModel");
+const axios = require("axios");
 const randomstring = require("randomstring");
 
 exports.LoginUser = async (req, res, next) => {
@@ -135,17 +136,18 @@ exports.LoadUser = async (req, res) => {
   try {
     const user = [];
     if (req.seller) {
-      // const seller = await sellerModel.findById(req.seller._id);
-
       user.push(seller);
     } else {
       const usere = await User.findById(req.user.id);
       user.push(usere);
     }
 
+    const myVideos = await myVideo.find({ user: req.user.id });
+
     res.status(200).json({
       success: true,
       user,
+      myVideos,
     });
   } catch (error) {
     res.status(500).json({
@@ -414,5 +416,48 @@ exports.deleteUser = async (req, res) => {
       .json({ success: true, message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.updateRemindSalah = async (req, res) => {
+  const { remindSalah } = req.body;
+
+  try {
+    const updatedMosque = await User.findByIdAndUpdate(
+      req.user.id,
+      { remindSalah },
+      { new: true }
+    );
+
+    if (!updatedMosque) {
+      return res.status(404).json({ message: "Mosque not found" });
+    }
+
+    res.json({ message: "Reminder updated successfully", data: updatedMosque });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+exports.SalahTime = async (req, res) => {
+  const { lat, lon } = req.query;
+
+  const user = await User.findById(req.user.id);
+
+  if (user?.remindSalah === "on") {
+    try {
+      const response = await axios.get(`https://api.aladhan.com/v1/timings`, {
+        params: {
+          latitude: lat,
+          longitude: lon,
+          method: 2,
+        },
+      });
+
+      const timings = response.data.data.timings;
+      res.json(timings);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch prayer times" });
+    }
   }
 };

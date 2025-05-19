@@ -16,6 +16,8 @@ const {
   blockUser,
   unblockUser,
   deleteUser,
+  updateRemindSalah,
+  SalahTime,
 } = require("../controller/userController");
 const { authMiddle, authorizeRoles } = require("../middleware/auth");
 
@@ -23,6 +25,8 @@ router.route("/login").post(LoginUser);
 router.route("/register").post(Register);
 router.route("/updtae/user/:id").post(updateUser);
 router.route("/request").post(authMiddle, requestUser);
+router.route("/update/salah").post(authMiddle, updateRemindSalah);
+router.route("/my/salah").post(authMiddle, SalahTime);
 
 router.route("/admin/user/:id").get(getSingleUser);
 router.route("/admin/users").get(authorizeRoles("admin"), GetAlluser);

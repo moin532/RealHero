@@ -64,7 +64,6 @@ const path = require("path");
 exports.createProduct = async (req, res) => {
   try {
     let images = [];
-    console.log(req.body, "ddddddddddddddd");
 
     // Handle images input
     if (typeof req.body.images === "string") {
@@ -102,10 +101,8 @@ exports.createProduct = async (req, res) => {
       };
     }
 
-    // Assign seller ID
-
     // Create product
-    req.body.user = req.user;
+    req.body.user = req.user.id;
     const product = await Product.create(req.body);
 
     res.status(201).json({
