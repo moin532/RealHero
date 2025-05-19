@@ -44,7 +44,7 @@ export default function HelpBanner() {
 
     try {
       const response = await axios.post(
-        "https://drivers-jw1mdkejt-moin532s-projects.vercel.app/api/v1/request",
+        "https://real-hero-vkna.vercel.app/api/v1/request",
         {
           location: "Bangalore", // fixed spelling
           helpnumber: number,

@@ -30,7 +30,7 @@ const DriverDetail = () => {
   useEffect(() => {
     const fetchDriver = async () => {
       try {
-        const response = await axios.get(`https://drivers-jw1mdkejt-moin532s-projects.vercel.app/api/v1/admin/user/${id}`, {
+        const response = await axios.get(`https://real-hero-vkna.vercel.app/api/v1/admin/user/${id}`, {
           headers: {
             Authorization: `${token}`
           }
@@ -46,7 +46,7 @@ const DriverDetail = () => {
     fetchDriver();
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`https://drivers-jw1mdkejt-moin532s-projects.vercel.app/api/v1/video/all`, {
+        const response = await axios.get(`https://real-hero-vkna.vercel.app/api/v1/video/all`, {
           headers: {
             Authorization: `${token}`
           }
@@ -65,7 +65,7 @@ const DriverDetail = () => {
   const handleStatusChange = async (reqid, newStatus) => {
     try {
       const response = await axios.put(
-        `https://drivers-jw1mdkejt-moin532s-projects.vercel.app/api/v1/status/change/${id}`,
+        `https://real-hero-vkna.vercel.app/api/v1/status/change/${id}`,
         { status: newStatus, requestId: reqid },
 
         {
@@ -87,7 +87,7 @@ const DriverDetail = () => {
   const handleBlock = async () => {
     try {
       const res = await axios.put(
-        `https://drivers-jw1mdkejt-moin532s-projects.vercel.app/api/v1/block/${driver._id}`,
+        `https://real-hero-vkna.vercel.app/api/v1/block/${driver._id}`,
         {},
         {
           headers: {
@@ -106,7 +106,7 @@ const DriverDetail = () => {
   const handleUnblock = async () => {
     try {
       const res = await axios.put(
-        `https://drivers-jw1mdkejt-moin532s-projects.vercel.app/api/v1/unblock/${id}`,
+        `https://real-hero-vkna.vercel.app/api/v1/unblock/${id}`,
         {},
         {
           headers: {
@@ -126,7 +126,7 @@ const DriverDetail = () => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
 
     try {
-      await axios.delete(`https://drivers-jw1mdkejt-moin532s-projects.vercel.app/api/v1/delete/user/${id}`, {
+      await axios.delete(`https://real-hero-vkna.vercel.app/api/v1/delete/user/${id}`, {
         headers: {
           Authorization: `${token}`
         }

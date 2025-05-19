@@ -41,7 +41,7 @@
   },
   "proxy": {
     "/api": {
-      "target": "https://drivers-jw1mdkejt-moin532s-projects.vercel.app",
+      "target": "https://real-hero-vkna.vercel.app",
       "changeOrigin": true,
       "secure": false
     }
