@@ -42,10 +42,9 @@ export default function HelpBanner() {
       ? JSON.parse(Cookies.get("Token"))
       : null;
 
-
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/v1/request",
+        "https://drivers-jw1mdkejt-moin532s-projects.vercel.app/api/v1/request",
         {
           location: "Bangalore", // fixed spelling
           helpnumber: number,
@@ -57,7 +56,7 @@ export default function HelpBanner() {
         }
       );
 
-      console.log(response)
+      console.log(response);
       if (response.data?.success) {
         window.alert("Request sent to Admin");
       } else {

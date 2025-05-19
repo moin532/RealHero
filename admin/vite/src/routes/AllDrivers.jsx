@@ -15,7 +15,7 @@ const AllDrivers = () => {
 
     const HandleFetch = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/v1/admin/users/request', {
+        const response = await axios.get('https://drivers-jw1mdkejt-moin532s-projects.vercel.app/api/v1/admin/users/request', {
           headers: {
             Authorization: `${token}` // Adjust if needed
           }

@@ -41,7 +41,7 @@
   },
   "proxy": {
     "/api": {
-      "target": "http://localhost:4000",
+      "target": "https://drivers-jw1mdkejt-moin532s-projects.vercel.app",
       "changeOrigin": true,
       "secure": false
     }
