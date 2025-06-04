@@ -3,6 +3,9 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import AddAdmin from './AddAdmin';
+import AlllAdmins from './AlllAdmins';
+import AddDriverSafety from './AddDriverSafety';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
@@ -14,7 +17,7 @@ const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 const AllDrivers = Loadable(lazy(() => import('../routes/AllDrivers')));
 const DetailDriver = Loadable(lazy(() => import('../routes/DriverDetail')));
 const DriverRequest = Loadable(lazy(() => import('../routes/DriverRequests')));
-
+const DriversCaution = Loadable(lazy(() => import('../routes/DriversCaution')));
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
@@ -48,6 +51,22 @@ const MainRoutes = {
     {
       path: 'driver/detail/:id',
       element: <DetailDriver />
+    },
+    {
+      path: '/add/admin',
+      element: <AddAdmin />
+    },
+    {
+      path: '/all/admin',
+      element: <AlllAdmins />
+    },
+    {
+      path: '/driver/safety',
+      element: <DriversCaution />
+    },
+    {
+      path: '/add/safety',
+      element: <AddDriverSafety />
     }
     // {
     //   path: 'typography',

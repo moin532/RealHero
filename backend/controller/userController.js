@@ -5,6 +5,7 @@ const cloudinary = require("cloudinary").v2;
 const myVideo = require("../models/MyVideoModel");
 const axios = require("axios");
 const randomstring = require("randomstring");
+const handleFileUpload = require("../utils/HandleFileUpload");
 
 exports.LoginUser = async (req, res, next) => {
   try {
@@ -34,7 +35,7 @@ exports.LoginUser = async (req, res, next) => {
         user_id: user._id,
       },
 
-      process.env.JWT_KEY,
+      "moinSecret",
       { expiresIn: "10d" }
     );
 
@@ -53,22 +54,19 @@ exports.LoginUser = async (req, res, next) => {
 exports.Register = async (req, res) => {
   try {
     const { name, number, password } = req.body;
-    const aadharFile = req.body?.aadharFile;
-    const DrivingLicense = req.body?.DrivingLicense;
 
-    // Check if all required data is present
-    if (!name || !number || !password || !aadharFile || !DrivingLicense) {
+    console.log(req.files);
+    if (!name || !number || !password) {
       return res.status(400).json({
         success: false,
-        msg: "All fields are required including files",
+        msg: "Name, number, and password are required",
       });
     }
 
-    // Check if tempFilePath exists
-    if (!aadharFile || !DrivingLicense) {
+    if (!req.files?.aadharFile || !req.files?.DrivingLicense) {
       return res.status(400).json({
         success: false,
-        msg: "Files are missing or not properly uploaded",
+        msg: "Both Aadhar and Driving License files are required",
       });
     }
 
@@ -81,41 +79,35 @@ exports.Register = async (req, res) => {
       });
     }
 
-    // 🔐 Hash the password
+    // Upload and get file paths
+    const uploadedFiles = await handleFileUpload(req.files);
+
+    console.log(uploadedFiles);
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ☁️ Upload Aadhar to Cloudinary
-    const aadharUpload = await cloudinary.uploader.upload(aadharFile, {
-      folder: "driversHub/aadhar",
-    });
-
-    // ☁️ Upload Driving License to Cloudinary
-    const licenseUpload = await cloudinary.uploader.upload(DrivingLicense, {
-      folder: "driversHub/license",
-    });
-
-    // ✅ Create new user
+    // Save to DB
     const newUser = await User.create({
       name,
       number,
       password: hashedPassword,
       aadharFile: {
-        public_id: aadharUpload.public_id,
-        url: aadharUpload.secure_url,
+        public_id: uploadedFiles.aadharFile.public_id,
+        url: uploadedFiles.aadharFile.url,
       },
       DrivingLicense: {
-        public_id: licenseUpload.public_id,
-        url: licenseUpload.secure_url,
+        public_id: uploadedFiles.DrivingLicense.public_id,
+        url: uploadedFiles.DrivingLicense.url,
       },
     });
 
-    // 🔐 Generate JWT
+    // JWT Token
     const Token = jwt.sign(
       {
         number: newUser.number,
         user_id: newUser._id,
       },
-      process.env.JWT_KEY,
+      "moinSecret",
       { expiresIn: "10d" }
     );
 
@@ -442,22 +434,22 @@ exports.updateRemindSalah = async (req, res) => {
 exports.SalahTime = async (req, res) => {
   const { lat, lon } = req.query;
 
-  const user = await User.findById(req.user.id);
+  // const user = await User.findById(req.user.id);
 
-  if (user?.remindSalah === "on") {
-    try {
-      const response = await axios.get(`https://api.aladhan.com/v1/timings`, {
-        params: {
-          latitude: lat,
-          longitude: lon,
-          method: 2,
-        },
-      });
+  // if (user?.remindSalah === "on") {
+  try {
+    const response = await axios.get(`https://api.aladhan.com/v1/timings`, {
+      params: {
+        latitude: lat,
+        longitude: lon,
+        method: 2,
+      },
+    });
 
-      const timings = response.data.data.timings;
-      res.json(timings);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch prayer times" });
-    }
+    const timings = response.data.data.timings;
+    res.json(timings);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch prayer times" });
   }
+  // }
 };

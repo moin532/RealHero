@@ -6,7 +6,7 @@ import { loadUserAction } from "../../redux/action/UserAction";
 import { GetVideosAction } from "../../redux/action/VideosAction";
 import ImageCard from "./ImageCard";
 
-const VideoFeed = ({ myvideos }) => {
+const VideoFeed = ({ myvideos, emergency }) => {
   const videoRefs = useRef([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -80,6 +80,18 @@ const VideoFeed = ({ myvideos }) => {
             //   alt="slide"
             //   className="w-full h-screen object-cover"
             // />
+          )}
+
+          {/* Donate Now Button */}
+          {emergency && (
+            <div className="absolute bottom-20 left-5">
+              <button
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded animate-bounce transition duration-300"
+                onClick={() => alert("Thank you for your donation!")}
+              >
+                Donate Now 🫴
+              </button>
+            </div>
           )}
         </div>
       ))}

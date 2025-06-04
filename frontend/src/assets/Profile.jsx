@@ -11,8 +11,9 @@ const ProfilePage = () => {
 
   const { loading, user, error } = useSelector((state) => state.User);
 
-  const myVideos = user && user?.myVideos;
-  const myuser = user && user?.user[0];
+  const myuser = user?.user?.[0] || {};
+  const myVideos = user?.myVideos || [];
+
   console.log(myuser);
   useEffect(() => {
     dispatch(loadUserAction());
@@ -29,9 +30,9 @@ const ProfilePage = () => {
   const [selectedOption, setSelectedOption] = useState("");
 
   const handleNavigate = () => {
-    if (selectedOption === "Salah") {
-      navigate("/salah"); // Replace with your actual route
-    }
+    // if (selectedOption === "Salah") {
+    navigate("/salah"); // Replace with your actual route
+    // }
   };
   return (
     <div className="w-full min-h-screen bg-gray-100 text-black p-4   mt-16">
@@ -107,7 +108,7 @@ const ProfilePage = () => {
       {/* Video Grid */}
       <div className="max-w-4xl mx-auto mt-6">
         <h3 className="text-xl font-semibold mb-4">My Videos</h3>
-        {myVideos && myVideos.length > 0 ? (
+        {myVideos && myVideos?.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {myVideos.map((videoData) => (
               <div
@@ -115,7 +116,8 @@ const ProfilePage = () => {
                 className="relative group rounded overflow-hidden"
               >
                 <video
-                  src={videoData.video.url}
+                  // src={`https://lipu.w4u.in/mlm${video?.video?.url}`}
+                  src={`https://lipu.w4u.in/mlm${videoData?.video?.url}`}
                   className="w-full h-48 object-cover"
                   muted
                   loop

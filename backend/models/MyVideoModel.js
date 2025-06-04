@@ -14,14 +14,23 @@ const driversVideoSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
   emergency: {
-    type: String,
-    default: "false",
+    type: Boolean, // changed to Boolean for consistency
+    default: false,
   },
+
   likes: {
     type: Number,
     default: 0,
   },
+
+  likedBy: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
 
   ratings: {
     type: Number,
@@ -41,7 +50,7 @@ const driversVideoSchema = new mongoose.Schema({
     {
       public_id: {
         type: String,
-        // required: true,
+        required: true, // keeping this required ensures all images have IDs
       },
       url: {
         type: String,
@@ -58,7 +67,7 @@ const driversVideoSchema = new mongoose.Schema({
   reviews: [
     {
       user: {
-        type: mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
       name: {
@@ -74,7 +83,8 @@ const driversVideoSchema = new mongoose.Schema({
   ],
 
   user: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId, // changed from String to ObjectId for proper referencing
+    ref: "UserHero",
     required: true,
   },
 

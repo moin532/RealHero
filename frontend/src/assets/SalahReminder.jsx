@@ -32,7 +32,7 @@ const SalahReminder = () => {
 
     try {
       const res = await axios.post(
-        `https://real-hero-vkna.vercel.app/api/v1/update/salah`,
+        `https://lipu.w4u.in/mlm/api/v1/update/salah`,
         {
           remindSalah: status,
         },

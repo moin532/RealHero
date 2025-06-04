@@ -15,11 +15,14 @@ const {
   cretePrdReview,
   getAllAdminPrd,
   getuserPosts,
+  toggleLike,
 } = require("../controller/myVideoController");
+const upload = require("../utils/multer");
 
 router.route("/video/new").post(authMiddle, createProduct);
 
 router.route("/video/all").get(getAllPRoducts);
+router.route("/toggle/like/:id").put(authMiddle, toggleLike);
 
 router.route("/admin/products").get(authMiddle, getAllAdminPrd);
 router.route("/admin/users/posts").get(authMiddle, getuserPosts);

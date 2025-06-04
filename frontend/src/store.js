@@ -11,6 +11,6 @@ const store = configureStore({
 });
 
 // export const url = "https://drivers-hub-eight.vercel.app";
-export const url = "http://localhost:4000";
+export const url = "https://lipu.w4u.in/mlm";
 
 export default store;

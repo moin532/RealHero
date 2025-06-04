@@ -3,11 +3,16 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { getAddressFromCurrentLocation } from "./api";
+import DriverSafetyCard from "../DriverSafetyCard";
 export default function HelpBanner() {
   const [showHelp, setShowHelp] = useState(false);
   const [showCallPopup, setShowCallPopup] = useState(false);
   const [showTeamPopup, setShowTeamPopup] = useState(false);
   const [location, setLocation] = useState("Fetching location...");
+  const [address, setAddress] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const emergencyNumbers = [
     { name: "Police", number: "100" },
@@ -24,19 +29,21 @@ export default function HelpBanner() {
   ];
 
   useEffect(() => {
-    if (showHelp && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setLocation(
-            `Lat: ${latitude.toFixed(3)}, Lng: ${longitude.toFixed(3)}`
-          );
-        },
-        () => setLocation("Location permission denied.")
-      );
-    }
-  }, [showHelp]);
+    const fetchAddress = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const addr = await getAddressFromCurrentLocation();
+        setAddress(addr);
+      } catch (err) {
+        setError(err.message);
+        setAddress("");
+      }
+      setLoading(false);
+    };
 
+    fetchAddress(); // Automatically run on mount
+  }, []);
   const HandleClickHelp = async (number) => {
     const token = Cookies.get("Token")
       ? JSON.parse(Cookies.get("Token"))
@@ -44,9 +51,9 @@ export default function HelpBanner() {
 
     try {
       const response = await axios.post(
-        "https://real-hero-vkna.vercel.app/api/v1/request",
+        "https://lipu.w4u.in/mlm/api/v1/request",
         {
-          location: "Bangalore", // fixed spelling
+          location: address, // fixed spelling
           helpnumber: number,
         },
         {
@@ -118,9 +125,11 @@ export default function HelpBanner() {
         </div>
 
         {/* Location */}
-        <p className="text-gray-700 font-medium text-sm">
-          📍 <span>{location}</span>
-        </p>
+        {address ? (
+          <p className="font-semibold">📍{address}</p>
+        ) : (
+          !error && <p>Pls On your Location</p>
+        )}
 
         {/* Buttons */}
         <div className="flex flex-col md:flex-row gap-4">
@@ -199,6 +208,8 @@ export default function HelpBanner() {
           </div>
         </div>
       )}
+
+      <DriverSafetyCard />
     </div>
   );
 }

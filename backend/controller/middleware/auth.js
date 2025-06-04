@@ -11,7 +11,7 @@ exports.authMiddle = async (req, res, next) => {
       });
     }
 
-    const decoded = jwt.verify(Token, process.env.JWT_KEY);
+    const decoded = jwt.verify(Token, "moinSecret");
     req.user = await User.findById(decoded.user_id);
 
     next();

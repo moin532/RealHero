@@ -12,6 +12,9 @@ import NotificationsPage from "./assets/Notification";
 import HelpBanner from "./assets/HelpBanner";
 import NormalFeed from "./videos/NormalFeed";
 import SalahReminder from "./assets/SalahReminder";
+import AudioRecorder from "./assets/AusioRender";
+import Emergency from "./videos/Emergency";
+import LocationFetcher from "./LocationFetcher";
 const App = () => {
   const dispatch = useDispatch();
 
@@ -29,11 +32,14 @@ const App = () => {
         <Route path="/" element={<NormalFeed />} />
         <Route path="/login" element={<DriverLogin />} />
         <Route path="/register" element={<DriverRegister />} />
+        <Route path="/send/audio" element={<AudioRecorder />} />
         <Route path="/post/video" element={<AddVideo />} />
         <Route path="/my/profile" element={<ProfilePage />} />
         <Route path="/notification" element={<NotificationsPage />} />
         <Route path="/help" element={<HelpBanner />} />
         <Route path="/salah" element={<SalahReminder />} />
+        <Route path="/emergency" element={<Emergency />} />
+        <Route path="/location" element={<LocationFetcher />} />
       </Routes>
       {isAuthenticated && <Footer />}
     </Router>

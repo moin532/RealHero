@@ -8,7 +8,8 @@ import {
   FaYoutube,
   FaPaperPlane,
 } from "react-icons/fa";
-
+import Cookies from "js-cookie";
+import axios from "axios";
 const VideoCard = forwardRef(({ video }, ref) => {
   const [likes, setLikes] = useState(video.likes);
   const [comments, setComments] = useState(video.comments);
@@ -16,7 +17,36 @@ const VideoCard = forwardRef(({ video }, ref) => {
   const [newComment, setNewComment] = useState("");
   const [showShareOptions, setShowShareOptions] = useState(false);
 
-  const handleLike = () => setLikes(likes + 1);
+  const handleLike = async (id) => {
+    const token = Cookies.get("Token")
+      ? JSON.parse(Cookies.get("Token"))
+      : null;
+
+    if (!token) {
+      alert("Please login to like this video");
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `https://lipu.w4u.in/mlm/api/v1/toggle/like/${id}`,
+        {},
+        {
+          headers: {
+            authorization: `${token}`,
+          },
+        }
+      );
+
+      console.log("Like response:", response.data);
+      // Optionally refresh video state here
+    } catch (error) {
+      console.error(
+        "Error toggling like:",
+        error.response?.data || error.message
+      );
+    }
+  };
 
   const handleCommentSubmit = () => {
     if (newComment.trim()) {
@@ -29,11 +59,13 @@ const VideoCard = forwardRef(({ video }, ref) => {
     alert(`Sharing to ${platform}: ${video.video.url}`);
   };
 
+  console.log(`https://lipu.w4u.in/mlm${video.video.url}`);
+
   return (
     <div className="relative w-full h-screen flex justify-center items-center bg-black">
       <video
         ref={ref}
-        src={video?.video.url}
+        src={`https://lipu.w4u.in/mlm${video?.video?.url}`} // ✅ Correct
         className="w-full h-full object-cover"
         playsInline
         loop
@@ -44,11 +76,13 @@ const VideoCard = forwardRef(({ video }, ref) => {
       <div className="absolute bottom-16  mb-28 right-5 flex flex-col gap-5 text-white text-2xl">
         {/* Like */}
         <button
-          onClick={handleLike}
+          onClick={() => {
+            handleLike(video._id);
+          }}
           className="flex flex-col items-center hover:text-red-500 transition"
         >
           <FaHeart />
-          <span className="text-sm">{likes}</span>
+          <span className="text-sm">{video?.likes}</span>
         </button>
 
         {/* Comment */}
@@ -100,8 +134,8 @@ const VideoCard = forwardRef(({ video }, ref) => {
         <div className="absolute bottom-10 left-0 w-full bg-black bg-opacity-80 text-white max-h-[40%] overflow-y-auto rounded-t-xl">
           <div className="p-3 space-y-2">
             <h3 className="text-lg font-bold  mb-12">Comments</h3>
-            {comments.length > 0 ? (
-              comments.map((cmt, idx) => (
+            {comments?.length > 0 ? (
+              comments?.map((cmt, idx) => (
                 <p key={idx}>
                   <span className="font-semibold">{cmt.user}:</span>{" "}
                   {cmt.comment}

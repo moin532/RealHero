@@ -7,50 +7,42 @@ import Cookies from "js-cookie";
 
 const AddVideo = () => {
   const [images, setImages] = useState([]);
-  const [base64Images, setBase64Images] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [video, setVideo] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
   const [caption, setCaption] = useState("");
   const [location, setLocation] = useState("");
   const [uploading, setUploading] = useState(false);
   const [emergency, setEmergency] = useState(false);
 
-  const [videoPreview, setVideoPreview] = useState(null);
+  useEffect(() => {
+    if (images.length > 0) {
+      const previews = images.map((img) => URL.createObjectURL(img));
+      setImagePreviews(previews);
 
-  console.log(emergency, "ghhghg");
+      // Clean up on unmount
+      return () => previews.forEach((url) => URL.revokeObjectURL(url));
+    }
+  }, [images]);
+
   useEffect(() => {
     if (video) {
       const url = URL.createObjectURL(video);
       setVideoPreview(url);
 
-      return () => URL.revokeObjectURL(url); // Clean up
+      return () => URL.revokeObjectURL(url);
     }
   }, [video]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setImages(files);
-
-    const base64Promises = files.map((file) => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(base64Promises)
-      .then((base64Array) => setBase64Images(base64Array))
-      .catch((err) => console.error("Image conversion error:", err));
   };
 
   const removeImage = (index) => {
-    const updatedImages = [...images];
-    const updatedBase64 = [...base64Images];
-    updatedImages.splice(index, 1);
-    updatedBase64.splice(index, 1);
-    setImages(updatedImages);
-    setBase64Images(updatedBase64);
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
   };
 
   const handleVideoChange = (e) => {
@@ -59,65 +51,49 @@ const AddVideo = () => {
 
   const removeVideo = () => {
     setVideo(null);
+    setVideoPreview(null);
   };
 
   const handleUpload = async () => {
-    if (!video || !images) {
-      alert("Please  upload a images or video.");
+    if (images.length === 0 && !video) {
+      alert("Please select at least one image or a video.");
       return;
     }
 
-    console.log(emergency);
-    const payload = {
-      images: base64Images,
-      caption,
-      location,
-      emergency,
-      video,
-    };
+    const formData = new FormData();
+    images.forEach((img) => formData.append("images", img));
+    if (video) formData.append("video", video);
 
-    console.log(payload);
+    formData.append("caption", caption);
+    formData.append("location", location);
+    formData.append("emergency", emergency);
 
     const token = JSON.parse(Cookies.get("Token"));
 
-    const uploadRequest = async (finalPayload) => {
-      try {
-        setUploading(true);
-        const res = await axios.post(
-          "https://real-hero-vkna.vercel.app/api/v1/video/new",
-          finalPayload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              authorization: `${token}`,
-            },
-          }
-        );
-        alert("Uploaded successfully!");
-        console.log(res.data);
-        // Reset form
-        setImages([]);
-        setBase64Images([]);
-        setVideo(null);
-        setCaption("");
-        setLocation("");
-      } catch (error) {
-        console.error("Upload error:", error);
-        alert("Upload failed.");
-      } finally {
-        setUploading(false);
-      }
-    };
-
-    if (video) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        payload.video = reader.result;
-        uploadRequest(payload);
-      };
-      reader.readAsDataURL(video);
-    } else {
-      uploadRequest(payload);
+    try {
+      setUploading(true);
+      const res = await axios.post(
+        "https://lipu.w4u.in/mlm/api/v1/video/new",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            authorization: `${token}`,
+          },
+        }
+      );
+      alert("Uploaded successfully!");
+      setImages([]);
+      setImagePreviews([]);
+      setVideo(null);
+      setVideoPreview(null);
+      setCaption("");
+      setLocation("");
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Upload failed.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -127,16 +103,14 @@ const AddVideo = () => {
         Add Video
       </h2>
 
-      {/* Caption */}
       <textarea
         rows="3"
         value={caption}
         onChange={(e) => setCaption(e.target.value)}
         placeholder="Write a caption..."
-        className="w-full p-3 mb-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+        className="w-full p-3 mb-3 border rounded-lg text-sm"
       />
 
-      {/* Location */}
       <div className="flex items-center gap-2 mb-4">
         <MdLocationOn className="text-xl text-red-500" />
         <input
@@ -145,7 +119,7 @@ const AddVideo = () => {
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Enter your current location"
-          className="w-full p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+          className="w-full p-2 border rounded-lg text-sm"
         />
       </div>
 
@@ -175,16 +149,15 @@ const AddVideo = () => {
           accept="image/*"
           multiple
           onChange={handleImageChange}
-          className="block w-full mt-2 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+          className="block w-full mt-2"
         />
       </label>
 
-      {/* Image Preview */}
       <div className="flex flex-wrap gap-3 mb-4">
-        {images.map((img, i) => (
+        {imagePreviews.map((src, i) => (
           <div key={i} className="relative">
             <img
-              src={videoPreview}
+              src={src}
               alt={`preview ${i}`}
               className="w-20 h-20 object-cover rounded-lg border shadow-sm"
             />
@@ -198,10 +171,6 @@ const AddVideo = () => {
         ))}
       </div>
 
-      {emergency && (
-        <div className="animate-ping absolute   top-28 left-54 w-4 h-4 bg-red-500 rounded-full"></div>
-      )}
-
       <label className="block mb-3 text-sm font-medium text-gray-700">
         <FaVideo className="inline mr-1" />
         Select Video
@@ -209,16 +178,15 @@ const AddVideo = () => {
           type="file"
           accept="video/*"
           onChange={handleVideoChange}
-          className="block w-full mt-2 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200"
+          className="block w-full mt-2"
         />
       </label>
 
-      {/* Video Preview */}
-      {video && (
+      {videoPreview && (
         <div className="relative mb-4">
           <video
             controls
-            src={URL.createObjectURL(video)}
+            src={videoPreview}
             className="w-full max-h-64 rounded-xl shadow"
           />
           <button
@@ -229,11 +197,11 @@ const AddVideo = () => {
           </button>
         </div>
       )}
-      {/* Upload Button */}
+
       <button
         onClick={handleUpload}
         disabled={uploading}
-        className="w-full py-3  mb-44 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:scale-105 transition-transform duration-200 flex items-center justify-center gap-2"
+        className="w-full py-3 mb-44 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:scale-105 transition-transform duration-200 flex items-center justify-center gap-2"
       >
         <FiUpload />
         {uploading ? "Uploading..." : "Upload Product"}

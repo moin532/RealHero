@@ -14,8 +14,8 @@ cloudinary.config({
   api_secret: process.env.API_SECRET,
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`server listening on ${process.env.port}`);
+app.listen(process.env.PORT || 4000, () => {
+  console.log(`server listening on ${process.env.port || 4000}`);
 });
 
 //unhandles promise rejection

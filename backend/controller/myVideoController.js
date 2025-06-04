@@ -1,6 +1,6 @@
 const Product = require("../models/MyVideoModel");
-const cloudinary = require("cloudinary");
-const path = require("path");
+
+const handleFileUpload = require("../utils/HandleFileUpload");
 
 // exports.createProduct = async (req, res) => {
 //   try {
@@ -63,60 +63,36 @@ const path = require("path");
 
 exports.createProduct = async (req, res) => {
   try {
-    let images = [];
-
-    // Handle images input
-    if (typeof req.body.images === "string") {
-      images.push(req.body.images);
-    } else {
-      images = req.body.images || [];
+    // Check for uploaded files
+    if (!req.files) {
+      return res.status(400).json({ error: "No files uploaded" });
     }
 
-    const imagesLinks = [];
+    // Upload files (images and video)
+    const savedFiles = await handleFileUpload(req.files);
 
-    // Upload each image to Cloudinary
-    for (let i = 0; i < images.length; i++) {
-      const result = await cloudinary.v2.uploader.upload(images[i], {
-        folder: "products/images",
-      });
+    // Add user ID to request body (from auth middleware)
 
-      imagesLinks.push({
-        public_id: result.public_id,
-        url: result.secure_url,
-      });
-    }
+    req.body.user = req.user._id;
 
-    req.body.images = imagesLinks;
+    console.log(savedFiles);
+    // Attach uploaded file data to request body
+    req.body.video = savedFiles.video;
+    req.body.images = savedFiles.images;
 
-    // Handle video upload
-    if (req.body.video) {
-      const videoUpload = await cloudinary.v2.uploader.upload(req.body.video, {
-        resource_type: "video",
-        folder: "products/videos",
-      });
-
-      req.body.video = {
-        public_id: videoUpload.public_id,
-        url: videoUpload.secure_url,
-      };
-    }
-
-    // Create product
-    req.body.user = req.user.id;
+    // Create the DriversVideo document in DB
     const product = await Product.create(req.body);
 
     res.status(201).json({
-      success: true,
-      product,
+      message: "Drivers video created successfully",
+      data: product,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(400).json({
-      success: false,
-      error: error.message,
-    });
+    console.error("File upload or save failed:", error);
+    res.status(500).json({ error: "Server error during file upload or save" });
   }
 };
+
 exports.getAllPRoducts = async (req, res) => {
   try {
     const products = await Product.find({});
@@ -204,7 +180,7 @@ exports.UpdateProduct = async (req, res) => {
 
 exports.getSinglePrd = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById({ user: req.params.id });
 
     if (!product) {
       return res.status(404).json({
@@ -225,6 +201,38 @@ exports.getSinglePrd = async (req, res) => {
   }
 };
 
+exports.toggleLike = async (req, res) => {
+  try {
+    const videoId = req.params.id;
+    const userId = req.user.id; // assuming authentication middleware sets this
+
+    const video = await Product.findById(videoId);
+    if (!video) return res.status(404).json({ message: "Video not found" });
+
+    const hasLiked = video.likedBy.includes(userId);
+
+    if (hasLiked) {
+      // Unlike
+      video.likedBy = video.likedBy.filter((id) => id.toString() !== userId);
+      video.likes -= 1;
+    } else {
+      // Like
+      video.likedBy.push(userId);
+      video.likes += 1;
+    }
+
+    await video.save();
+
+    return res.status(200).json({
+      success: true,
+      message: hasLiked ? "Like removed" : "Video liked",
+      likes: video.likes,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 exports.dltPrd = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);

@@ -15,14 +15,14 @@ const AllDrivers = () => {
 
     const HandleFetch = async () => {
       try {
-        const response = await axios.get('https://real-hero-vkna.vercel.app/api/v1/admin/users/request', {
+        const response = await axios.get('https://lipu.w4u.in/mlm/api/v1/admin/users', {
           headers: {
-            Authorization: `${token}` // Adjust if needed
+            Authorization: `${token}`
           }
         });
 
         const fetchedUser = response.data.user;
-        setUsers([fetchedUser]); // wrap in array to map later
+        setUsers(fetchedUser); // ✅ no wrapping
       } catch (error) {
         console.error('Fetch failed:', error.response?.data || error.message);
       }
@@ -34,7 +34,7 @@ const AllDrivers = () => {
   return (
     <Box p={2}>
       <Typography variant="h5" gutterBottom>
-        All Driveres List
+        All Drivers List
       </Typography>
 
       <TableContainer component={Paper}>
@@ -45,43 +45,31 @@ const AllDrivers = () => {
               <TableCell>Phone Number</TableCell>
               <TableCell>Aadhar</TableCell>
               <TableCell>License</TableCell>
-              <TableCell> Joined</TableCell>
+              <TableCell>Joined</TableCell>
               <TableCell>Help Requests</TableCell>
               <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map(
-              (user) => (
-                // user.userRequests.map((req) => (
-                <TableRow
-                  key={user._id}
-                  onClick={() => {
-                    navigate(`/driver/detail/${user._id}`);
-                  }}
-                >
-                  {console.log(user)}
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.number}</TableCell>
-                  <TableCell>
-                    <a href={user.aadharFile?.url} target="_blank" rel="noreferrer">
-                      View Aadhar
-                    </a>
-                  </TableCell>
-                  <TableCell>
-                    <a href={user.DrivingLicense?.url} target="_blank" rel="noreferrer">
-                      View License
-                    </a>
-                  </TableCell>
-                  <TableCell>{user.createdAt.slice(0, 10)}</TableCell>
-                  <TableCell>{user.userRequests.length}</TableCell>
-                  <TableCell sx={{ color: 'yellowgreen' }}>{user.block?.status === 'false' ? 'Active' : 'Blocked'}</TableCell>
-                  {/* <TableCell>{new Date(req.requestedAt).toocaleString()}</TableCell> */}
-                </TableRow>
-              )
-              // )
-              // )
-            )}
+            {users.map((user) => (
+              <TableRow key={user._id} onClick={() => navigate(`/driver/detail/${user._id}`)}>
+                <TableCell>{user?.name}</TableCell>
+                <TableCell>{user?.number}</TableCell>
+                <TableCell>
+                  <a href={`https://lipu.w4u.in/mlm${user?.aadharFile?.url}`} target="_blank" rel="noreferrer">
+                    View Aadhar
+                  </a>
+                </TableCell>
+                <TableCell>
+                  <a href={user?.DrivingLicense?.url} target="_blank" rel="noreferrer">
+                    View Aadharback
+                  </a>
+                </TableCell>
+                <TableCell>{user?.createdAt?.slice(0, 10)}</TableCell>
+                <TableCell>{user?.userRequests?.length ?? 0}</TableCell>
+                <TableCell sx={{ color: 'yellowgreen' }}>{user?.block?.status === 'false' ? 'Active' : 'Blocked'}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

@@ -85,6 +85,11 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   },
 
+  usertype: {
+    type: String,
+    enum: ["user", "admin", "driver"],
+    default: "user",
+  },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });

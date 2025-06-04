@@ -5,6 +5,7 @@ exports.authMiddle = async (req, res, next) => {
   try {
     const Token = req.headers.authorization;
 
+    console.log(req.headers.authorization);
     if (!Token) {
       return res.status(404).json({
         err: " Token is empty",
@@ -34,5 +35,23 @@ exports.authorizeRoles = (...roles) => {
       );
     }
     next();
+  };
+};
+
+exports.checkStatus = (permissionName) => {
+  return (req, res, next) => {
+    if (req.user.role === "admin") {
+      return next(); // full access
+    }
+
+    if (
+      req.user.role === "admin" &&
+      req.user.permissions &&
+      req.user.permissions[permissionName]
+    ) {
+      return next();
+    }
+
+    return res.status(403).json({ message: "Permission denied" });
   };
 };
