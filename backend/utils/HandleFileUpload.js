@@ -5,11 +5,13 @@ const fs = require("fs");
 const createUploadDirs = () => {
   const imageDir = path.join(__dirname, "../uploads/images");
   const videoDir = path.join(__dirname, "../uploads/videos");
+  const voiceDir = path.join(__dirname, "../uploads/voice");
 
   fs.mkdirSync(imageDir, { recursive: true });
   fs.mkdirSync(videoDir, { recursive: true });
+  fs.mkdirSync(voiceDir, { recursive: true });
 
-  return { imageDir, videoDir };
+  return { imageDir, videoDir, voiceDir };
 };
 
 // Slugify filename: remove spaces, special chars
@@ -39,7 +41,7 @@ const saveFile = async (file, targetDir, subFolder) => {
 
 // Handle any image/video file
 const handleFileUpload = async (files) => {
-  const { imageDir, videoDir } = createUploadDirs();
+  const { imageDir, videoDir, voiceDir } = createUploadDirs();
   const result = {};
 
   if (files.aadharFile) {
@@ -59,6 +61,10 @@ const handleFileUpload = async (files) => {
   }
   if (files.images) {
     result.images = await saveFile(files.images, imageDir, "images");
+  }
+
+  if (files.voice) {
+    result.voice = await saveFile(files.voice, voiceDir, "voice");
   }
 
   return result;

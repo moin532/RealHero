@@ -28,7 +28,7 @@ const driversVideoSchema = new mongoose.Schema({
   likedBy: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "UserHero",
     },
   ],
 
@@ -68,7 +68,7 @@ const driversVideoSchema = new mongoose.Schema({
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "UserHero",
       },
       name: {
         type: String,
@@ -78,6 +78,10 @@ const driversVideoSchema = new mongoose.Schema({
       },
       comment: {
         type: String,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
       },
     },
   ],

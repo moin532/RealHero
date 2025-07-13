@@ -2,9 +2,9 @@ import React from "react";
 import {
   FaHome,
   FaPlusCircle,
-  FaUserFriends,
-  FaBell,
   FaUser,
+  FaMicrophone,
+  FaBuilding,
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { MdEmergencyShare } from "react-icons/md";
@@ -29,6 +29,7 @@ const Footer = () => {
         <span className="text-xs mt-1">Feed</span>
       </NavLink>
 
+      {/* Emergency */}
       <NavLink
         to="/emergency"
         className={({ isActive }) =>
@@ -42,7 +43,7 @@ const Footer = () => {
       </NavLink>
 
       {/* Upload */}
-      <NavLink
+      {/* <NavLink
         to="/post/video"
         className={({ isActive }) =>
           `flex flex-col items-center ${
@@ -52,6 +53,32 @@ const Footer = () => {
       >
         <FaPlusCircle className="text-2xl" />
         <span className="text-xs mt-1">Upload</span>
+      </NavLink> */}
+
+      {/* Business */}
+      <NavLink
+        to="/business"
+        className={({ isActive }) =>
+          `flex flex-col items-center ${
+            isActive ? "text-blue-500" : "text-gray-700"
+          }`
+        }
+      >
+        <FaBuilding className="text-2xl" />
+        <span className="text-xs mt-1">Business</span>
+      </NavLink>
+
+      {/* Voice Chat */}
+      <NavLink
+        to="/voice-chat"
+        className={({ isActive }) =>
+          `flex flex-col items-center ${
+            isActive ? "text-blue-500" : "text-gray-700"
+          }`
+        }
+      >
+        <FaMicrophone className="text-2xl" />
+        <span className="text-xs mt-1">Voice Chat</span>
       </NavLink>
 
       {/* Profile */}
@@ -67,7 +94,7 @@ const Footer = () => {
         <span className="text-xs mt-1">Profile</span>
       </NavLink>
 
-      {/* Alerts */}
+      {/* Help */}
       <NavLink
         to="/help"
         className={({ isActive }) =>

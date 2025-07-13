@@ -14,7 +14,7 @@ const DriversCaution = () => {
 
   const fetchEntries = () => {
     axios
-      .get('https://lipu.w4u.in/mlm/api/v1/all/safety')
+      .get('  http://localhost:4000/api/v1/all/safety')
       .then((res) => {
         setEntries(res.data.data || []);
       })
@@ -26,7 +26,7 @@ const DriversCaution = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this entry?')) {
       try {
-        await axios.delete(`https://lipu.w4u.in/mlm/api/v1//create/safety/${id}`);
+        await axios.delete(`  http://localhost:4000/api/v1//create/safety/${id}`);
         setEntries((prev) => prev.filter((entry) => entry._id !== id));
       } catch (err) {
         console.error('Error deleting entry:', err);
@@ -75,7 +75,7 @@ const DriversCaution = () => {
               {entry.image && (
                 <CardMedia
                   component="img"
-                  image={`https://lipu.w4u.in/mlm/${entry.image}`}
+                  image={`  http://localhost:4000/${entry.image}`}
                   alt="Safety Image"
                   sx={{ height: 240, objectFit: 'cover' }}
                 />
@@ -94,7 +94,7 @@ const DriversCaution = () => {
                       border: '1px solid #ddd'
                     }}
                   >
-                    <source src={`https://lipu.w4u.in/mlm/${entry.video}`} type="video/mp4" />
+                    <source src={`  http://localhost:4000/${entry.video}`} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 </Box>

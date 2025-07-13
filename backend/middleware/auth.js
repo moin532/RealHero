@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const UserNormal = require("../models/NormalUserModel");
 
 exports.authMiddle = async (req, res, next) => {
   try {
@@ -12,10 +13,15 @@ exports.authMiddle = async (req, res, next) => {
       });
     }
 
-    const decoded = jwt.verify(Token, process.env.JWT_KEY);
+    // Extract token from "Bearer <token>"
+    const token = Token.startsWith('Bearer ') ? Token.slice(7) : Token;
 
+    const decoded = jwt.verify(token, "moinSecret");
+
+    console.log(decoded)
     // req.user = await User.findById(decoded.user_id);
     req.user = await User.findById(decoded.user_id);
+    req.normalUser = await UserNormal.findById(decoded.user_id);
 
     next();
   } catch (error) {

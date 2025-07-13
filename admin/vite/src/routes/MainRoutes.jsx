@@ -6,6 +6,8 @@ import Loadable from 'ui-component/Loadable';
 import AddAdmin from './AddAdmin';
 import AlllAdmins from './AlllAdmins';
 import AddDriverSafety from './AddDriverSafety';
+import { AddBusiness } from '@mui/icons-material';
+import Business from './AddBuisness';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
@@ -67,6 +69,10 @@ const MainRoutes = {
     {
       path: '/add/safety',
       element: <AddDriverSafety />
+    },
+    {
+      path: '/add/business',
+      element: <Business />
     }
     // {
     //   path: 'typography',

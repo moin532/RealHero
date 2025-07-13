@@ -1,4 +1,6 @@
 const User = require("../models/userModel");
+const UserNormal = require("../models/NormalUserModel");
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
@@ -6,6 +8,9 @@ const myVideo = require("../models/MyVideoModel");
 const axios = require("axios");
 const randomstring = require("randomstring");
 const handleFileUpload = require("../utils/HandleFileUpload");
+const VoiceNote = require("../models/VoiceNoteModel");
+const path = require("path");
+const fs = require("fs");
 
 exports.LoginUser = async (req, res, next) => {
   try {
@@ -126,22 +131,28 @@ exports.Register = async (req, res) => {
 
 exports.LoadUser = async (req, res) => {
   try {
-    const user = [];
-    if (req.seller) {
-      user.push(seller);
-    } else {
-      const usere = await User.findById(req.user.id);
-      user.push(usere);
+    let user;
+    let userId;
+    if (req.normalUser && req.normalUser.id) {
+      userId = req.normalUser.id;
+      user = await UserNormal.findById(userId);
+    } else if (req.user && req.user.id) {
+      userId = req.user.id;
+      user = await User.findById(userId);
     }
-
-    const myVideos = await myVideo.find({ user: req.user.id });
-
+    if (!user) {
+      return res.status(404).json({ success: false, err: "User not found" });
+    }
+    const myVideos = await myVideo.find({ user: userId });
     res.status(200).json({
       success: true,
       user,
       myVideos,
     });
   } catch (error) {
+    if (error.name === "JsonWebTokenError") {
+      return res.status(400).json({ success: false, err: "jwt malformed" });
+    }
     res.status(500).json({
       success: false,
       err: error.message,
@@ -452,4 +463,75 @@ exports.SalahTime = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch prayer times" });
   }
   // }
+};
+
+exports.myuploadVoiceNote = async (req, res) => {
+  res.status(200).json({
+    succsess: true,
+  });
+  try {
+    if (!req.files || !req.files.voice) {
+      return res.status(400).json({ error: "No voice file uploaded" });
+    }
+
+    console.log("CLicked");
+    // Save file
+    const saved = await handleFileUpload({ voice: req.files.voice });
+    const file = saved.voice;
+    // Save metadata
+    const note = await VoiceNote.create({
+      user: req.user._id,
+      filename: file.name,
+      url: file.url,
+      mimetype: file.mimetype,
+      size: file.size,
+    });
+    res.status(201).json({ success: true, note });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.RegisterSimpleUser = async (req, res) => {
+  try {
+    const { name, number, password } = req.body;
+    if (!name || !number || !password) {
+      return res.status(400).json({
+        success: false,
+        msg: "Name, number, and password are required",
+      });
+    }
+    const isUserExist = await User.findOne({ number });
+    if (isUserExist) {
+      return res.status(400).json({
+        success: false,
+        msg: "Number already exists",
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await User.create({
+      name,
+      number,
+      password: hashedPassword,
+      role: "user",
+      usertype: "user"
+    });
+    const Token = jwt.sign(
+      {
+        number: newUser.number,
+        user_id: newUser._id,
+      },
+      "moinSecret",
+      { expiresIn: "10d" }
+    );
+    res.status(200).json({
+      success: true,
+      Token,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      err: error.message,
+    });
+  }
 };

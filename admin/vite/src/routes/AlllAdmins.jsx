@@ -27,7 +27,7 @@ const AlllAdmins = () => {
     const HandleFetch = async () => {
       try {
         const response = await axios.post(
-          'https://lipu.w4u.in/mlm/api/v1/get/admin',
+          '  http://localhost:4000/api/v1/get/admin',
           {},
           {
             headers: {
@@ -52,7 +52,7 @@ const AlllAdmins = () => {
 
     window.alert('Are you sure you want to delete this admin? This action cannot be undone.');
     try {
-      await axios.delete(`https://lipu.w4u.in/mlm/api/v1/delete/admin/${id}`, {
+      await axios.delete(`  http://localhost:4000/api/v1/delete/admin/${id}`, {
         headers: {
           Authorization: `${token}`
         }

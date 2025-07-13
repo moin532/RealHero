@@ -35,7 +35,7 @@ const AddAdmin = () => {
   const handleSubmit = async () => {
     try {
       const token = JSON.parse(Cookies.get('Token'));
-      const res = await axios.post('https://lipu.w4u.in/mlm/api/v1/add/admin', formData, {
+      const res = await axios.post('  http://localhost:4000/api/v1/add/admin', formData, {
         headers: {
           Authorization: `${token}`
         }

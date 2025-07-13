@@ -23,7 +23,7 @@ const AddDriverSafety = () => {
     if (video) formData.append('video', video);
 
     try {
-      const res = await axios.post('https://lipu.w4u.in/mlm/api/v1/create/safety', formData, {
+      const res = await axios.post('  http://localhost:4000/api/v1/create/safety', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setResponse({ success: true, message: 'Upload successful!' });

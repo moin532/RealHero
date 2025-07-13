@@ -73,7 +73,7 @@ const AddVideo = () => {
     try {
       setUploading(true);
       const res = await axios.post(
-        "https://lipu.w4u.in/mlm/api/v1/video/new",
+        "  http://localhost:4000/api/v1/video/new",
         formData,
         {
           headers: {

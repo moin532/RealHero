@@ -1,4 +1,7 @@
 // locationService.js
+import axios from "axios";
+import Cookies from "js-cookie";
+
 export const getAddressFromCurrentLocation = () => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -44,3 +47,46 @@ export const getAddressFromCurrentLocation = () => {
     );
   });
 };
+
+// Voice Chat API
+
+const API_BASE = "http://localhost:4000/api/v1";
+// const token = Cookies.get("Token") ? JSON.parse(Cookies.get("Token")) : null;
+const token = Cookies.get("Token") || null;
+export async function uploadVoiceNote(file) {
+  const formData = new FormData();
+  formData.append("voice", file);
+
+  const res = await axios.post(`${API_BASE}/voice/upload`, formData, {
+    headers: {
+      authorization: token,
+      // Let Axios set Content-Type for FormData automatically
+    },
+  });
+  return res.data;
+}
+
+export async function listVoiceNotes() {
+  const res = await fetch(`${API_BASE}/voice/list`, {
+    headers: {
+      authorization: token,
+    },
+  });
+  return res.json();
+}
+
+export function getVoiceNoteStreamUrl(id) {
+  console.log(id);
+
+  return `${API_BASE}/voice/${id}`;
+}
+
+export async function deleteVoiceNote(id) {
+  const token = Cookies.get("Token") ? JSON.parse(Cookies.get("Token")) : null;
+  const res = await axios.delete(`${API_BASE}/voice/delete/${id}`, {
+    headers: {
+      authorization: token,
+    },
+  });
+  return res.data;
+}

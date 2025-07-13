@@ -16,6 +16,9 @@ const {
   getAllAdminPrd,
   getuserPosts,
   toggleLike,
+  addComment,
+  getComments,
+  deleteComment,
 } = require("../controller/myVideoController");
 const upload = require("../utils/multer");
 
@@ -32,6 +35,11 @@ router.route("/admin/product/:id").put(UpdateProduct);
 router.route("/admin/product/:id").delete(dltPrd);
 
 router.route("/reviews").put(authMiddle, cretePrdReview);
+
+// Comment routes
+router.route("/video/:videoId/comment").post(authMiddle, addComment);
+router.route("/video/:videoId/comments").get(getComments);
+router.route("/video/:videoId/comment/:commentId").delete(authMiddle, deleteComment);
 
 // authMiddle , authorizeRoles("user")
 module.exports = router;

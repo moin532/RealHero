@@ -7,7 +7,7 @@ const DriverSafetyCard = () => {
   useEffect(() => {
     window.scrollTo(0, 0); // Scroll to top on component mount
     axios
-      .get("https://lipu.w4u.in/mlm/api/v1/all/safety")
+      .get("  http://localhost:4000/api/v1/all/safety")
       .then((res) => {
         setEntries(res.data.data || []);
       })
@@ -33,7 +33,7 @@ const DriverSafetyCard = () => {
             {entry.image && (
               <div className="mb-8">
                 <img
-                  src={`https://lipu.w4u.in/mlm/${entry.image}`}
+                  src={`  http://localhost:4000/${entry.image}`}
                   alt="Safety"
                   className="w-full  h-full object-cover rounded-md border"
                 />
@@ -47,7 +47,7 @@ const DriverSafetyCard = () => {
                   className="w-full h-48 object-cover rounded-md border"
                 >
                   <source
-                    src={`https://lipu.w4u.in/mlm/${entry.video}`}
+                    src={`  http://localhost:4000/${entry.video}`}
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.

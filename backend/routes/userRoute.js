@@ -18,11 +18,15 @@ const {
   deleteUser,
   updateRemindSalah,
   SalahTime,
+  myuploadVoiceNote,
+  RegisterSimpleUser,
 } = require("../controller/userController");
 const { authMiddle, authorizeRoles } = require("../middleware/auth");
+const { uploadVoiceNote } = require("../controller/voiceNoteController");
 
 router.route("/login").post(LoginUser);
 router.route("/register").post(Register);
+router.route("/register/simple").post(RegisterSimpleUser);
 router.route("/updtae/user/:id").post(updateUser);
 
 router.route("/request").post(authMiddle, requestUser);
@@ -38,5 +42,7 @@ router.route("/unblock/:userId").put(authMiddle, unblockUser);
 router.route("/delete/user/:userId").delete(authMiddle, deleteUser);
 
 router.route("/me").get(authMiddle, LoadUser);
+
+router.route("/my/voice").post(authMiddle, myuploadVoiceNote);
 
 module.exports = router;

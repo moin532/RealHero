@@ -89,6 +89,10 @@ const DriverLogin = () => {
           <Link to="/register">
             <p className=" mt-5  text-gray">Don't Have a Account register</p>
           </Link>
+          {/* Add link to user login */}
+          <Link to="/end/user/login">
+            <p className="mt-2 text-blue-600 text-center underline">Login as User</p>
+          </Link>
         </form>
       </motion.div>
     </div>

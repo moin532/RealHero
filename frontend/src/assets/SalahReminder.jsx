@@ -1,10 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Switch } from "@headlessui/react";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { loadUserAction } from "../../redux/action/UserAction";
+
 const SalahReminder = () => {
-  const [language, setLanguage] = useState("en");
+  const [language, setLanguage] = useState("hi");
   const [remind, setRemind] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const { user } = useSelector((state) => state.User);
+
+  const myuser = user?.user?.[0] || {};
+
+  console.log(myuser);
+
+  // Check if remindSalah is "on" and set the state accordingly
+  useEffect(() => {
+    if (myuser.remindSalah === "on") {
+      setRemind(true);
+    } else {
+      setRemind(false);
+    }
+  }, [myuser.remindSalah]);
 
   const content = {
     en: {
@@ -26,13 +46,17 @@ const SalahReminder = () => {
 
   const token = Cookies.get("Token") ? JSON.parse(Cookies.get("Token")) : null;
 
+  useEffect(() => {
+    dispatch(loadUserAction());
+  }, [dispatch]);
+
   const handleReminderToggle = async (value) => {
     setRemind(value); // Update local state
     const status = value ? "on" : "off";
 
     try {
       const res = await axios.post(
-        `https://lipu.w4u.in/mlm/api/v1/update/salah`,
+        `  http://localhost:4000/api/v1/update/salah`,
         {
           remindSalah: status,
         },

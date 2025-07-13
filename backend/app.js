@@ -21,10 +21,18 @@ const userRoute = require("./routes/userRoute");
 const prdRoute = require("./routes/productsRoute");
 const adminRoute = require("./routes/AdminRoute");
 const driversafetyRoute = require("./routes/DriverSafetyRoute");
+const voiceRoute = require("./routes/voiceRoute");
+const driverIdCardRoute = require("./routes/driverIdCardRoute");
+const buisnessRoutw = require("./routes/businessRoute");
+const normalUserRoute = require("./routes/normalUserRoute");
 
 app.use("/api/v1/", adminRoute);
 app.use("/api/v1/", userRoute);
 app.use("/api/v1/", prdRoute);
 app.use("/api/v1/", driversafetyRoute);
+app.use("/api/v1/", voiceRoute);
+app.use("/api/v1/", buisnessRoutw);
+app.use("/api/v1/normaluser", normalUserRoute);
+app.use("/api/driver-id", driverIdCardRoute);
 
 module.exports = app;

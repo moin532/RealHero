@@ -30,7 +30,7 @@ const DriverDetail = () => {
   useEffect(() => {
     const fetchDriver = async () => {
       try {
-        const response = await axios.get(`https://lipu.w4u.in/mlm/api/v1/admin/user/${id}`, {
+        const response = await axios.get(`  http://localhost:4000/api/v1/admin/user/${id}`, {
           headers: {
             Authorization: `${token}`
           }
@@ -46,7 +46,7 @@ const DriverDetail = () => {
     fetchDriver();
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`https://lipu.w4u.in/mlm/api/v1/product/${id}`, {
+        const response = await axios.get(`  http://localhost:4000/api/v1/product/${id}`, {
           headers: {
             Authorization: `${token}`
           }
@@ -65,7 +65,7 @@ const DriverDetail = () => {
   const handleStatusChange = async (reqid, newStatus) => {
     try {
       const response = await axios.put(
-        `https://lipu.w4u.in/mlm/api/v1/status/change/${id}`,
+        `  http://localhost:4000/api/v1/status/change/${id}`,
         { status: newStatus, requestId: reqid },
 
         {
@@ -87,7 +87,7 @@ const DriverDetail = () => {
   const handleBlock = async () => {
     try {
       const res = await axios.put(
-        `https://lipu.w4u.in/mlm/api/v1/block/${driver._id}`,
+        `  http://localhost:4000/api/v1/block/${driver._id}`,
         {},
         {
           headers: {
@@ -106,7 +106,7 @@ const DriverDetail = () => {
   const handleUnblock = async () => {
     try {
       const res = await axios.put(
-        `https://lipu.w4u.in/mlm/api/v1/unblock/${id}`,
+        `  http://localhost:4000/api/v1/unblock/${id}`,
         {},
         {
           headers: {
@@ -126,7 +126,7 @@ const DriverDetail = () => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
 
     try {
-      await axios.delete(`https://lipu.w4u.in/mlm/api/v1/delete/user/${id}`, {
+      await axios.delete(`  http://localhost:4000/api/v1/delete/user/${id}`, {
         headers: {
           Authorization: `${token}`
         }
@@ -247,7 +247,7 @@ const DriverDetail = () => {
                     <CardMedia
                       component="video"
                       sx={{ border: '1px solid black' }}
-                      src={`https://lipu.w4u.in/mlm${post.video.url}`}
+                      src={`  http://localhost:4000${post.video.url}`}
                       controls
                       style={{ height: 250 }}
                     />
@@ -260,7 +260,7 @@ const DriverDetail = () => {
                         <CardMedia
                           key={idx}
                           component="img"
-                          src={`https://lipu.w4u.in/mlm${img.url}`}
+                          src={`  http://localhost:4000${img.url}`}
                           alt="Post Image"
                           sx={{ width: 100, height: 100, borderRadius: 2, border: '1px solid black' }}
                         />

@@ -257,6 +257,10 @@ const DriverRegister = () => {
               Already have an account? <span className="underline">Login</span>
             </p>
           </Link>
+          {/* Add link to user registration */}
+          <Link to="/end/user/register">
+            <p className="mt-2 text-blue-600 text-center underline">Register as User</p>
+          </Link>
         </form>
       </motion.div>
     </div>

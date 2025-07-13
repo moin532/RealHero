@@ -29,7 +29,7 @@ export const RegisterUser = (userData) => async (dispatch) => {
       config
     );
 
-    Cookies.set("Token", JSON.stringify(data.Token), {
+    Cookies.set("Token", data.Token, {
       expires: 7,
       path: "/",
     });
@@ -59,7 +59,7 @@ export const LoginUser = (userData) => async (dispatch) => {
 
     const { data } = await axios.post(`${url}/api/v1/login`, userData, config);
 
-    Cookies.set("Token", JSON.stringify(data.Token), {
+    Cookies.set("Token", data.Token, {
       expires: 7,
       path: "/",
     });
@@ -75,7 +75,8 @@ export const LoginUser = (userData) => async (dispatch) => {
   }
 };
 
-const token = Cookies.get("Token") ? JSON.parse(Cookies.get("Token")) : null;
+const token = Cookies.get("Token") || null;
+console.log(token)
 
 export const loadUserAction = () => async (dispatch) => {
   try {
@@ -83,7 +84,7 @@ export const loadUserAction = () => async (dispatch) => {
 
     const { data } = await axios.get(`${url}/api/v1/me`, {
       headers: {
-        authorization: `${token}`,
+        authorization: `Bearer ${token}`,
       },
     });
 

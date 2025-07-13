@@ -46,7 +46,7 @@ export default function AuthLogin() {
   const HandleSubmit = async () => {
     console.log('submitt');
     try {
-      const response = await axios.post('https://lipu.w4u.in/mlm/api/v1/login', {
+      const response = await axios.post('  http://localhost:4000/api/v1/login', {
         number: phoneNumber,
         password
       });

@@ -310,3 +310,142 @@ exports.cretePrdReview = async (req, res) => {
     });
   }
 };
+
+// Add comment to video
+exports.addComment = async (req, res) => {
+  try {
+    const { videoId } = req.params;
+    const { comment } = req.body;
+    const userId = req.user._id;
+
+    if (!comment || comment.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Comment cannot be empty",
+      });
+    }
+
+    const video = await Product.findById(videoId);
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    // Get user details for the comment
+    const User = require("../models/userModel");
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const newComment = {
+      user: userId,
+      name: user.name || user.email,
+      comment: comment.trim(),
+      createdAt: new Date(),
+    };
+
+    video.reviews.push(newComment);
+    video.numOfReviews = video.reviews.length;
+    await video.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Comment added successfully",
+      comment: newComment,
+    });
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+// Get comments for a video
+exports.getComments = async (req, res) => {
+  try {
+    const { videoId } = req.params;
+
+    const video = await Product.findById(videoId).populate({
+      path: "reviews.user",
+      select: "name email",
+    });
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      comments: video.reviews,
+    });
+  } catch (error) {
+    console.error("Error getting comments:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+// Delete comment (only by comment author)
+exports.deleteComment = async (req, res) => {
+  try {
+    const { videoId, commentId } = req.params;
+    const userId = req.user._id;
+
+    const video = await Product.findById(videoId);
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    // Find the comment
+    const commentIndex = video.reviews.findIndex(
+      (comment) => comment._id.toString() === commentId
+    );
+
+    if (commentIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    }
+
+    // Check if user is the author of the comment
+    if (video.reviews[commentIndex].user.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only delete your own comments",
+      });
+    }
+
+    // Remove the comment
+    video.reviews.splice(commentIndex, 1);
+    video.numOfReviews = video.reviews.length;
+    await video.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Comment deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

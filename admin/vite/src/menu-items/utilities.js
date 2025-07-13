@@ -1,3 +1,4 @@
+
 // assets
 import { IconTypography, IconPalette, IconShadow, IconWindmill } from '@tabler/icons-react';
 import { GiSteeringWheel } from 'react-icons/gi';
@@ -6,6 +7,7 @@ import { BsDatabaseCheck } from 'react-icons/bs';
 import { FaHireAHelper } from 'react-icons/fa6';
 import { BsPersonVcard } from 'react-icons/bs';
 import { GiTowTruck } from 'react-icons/gi';
+import { MdBusinessCenter } from 'react-icons/md'; // 👈 Added business icon
 
 // constant
 const icons = {
@@ -18,7 +20,8 @@ const icons = {
   BsDatabaseCheck,
   FaHireAHelper,
   BsPersonVcard,
-  GiTowTruck
+  GiTowTruck,
+  MdBusinessCenter // 👈 Include in icon object
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -37,7 +40,7 @@ const utilities = {
       breadcrumbs: false
     },
     {
-      id: 'util-typography',
+      id: 'util-requests',
       title: 'Requests',
       type: 'item',
       url: '/DriverRequest',
@@ -45,7 +48,7 @@ const utilities = {
       breadcrumbs: false
     },
     {
-      id: 'util-color',
+      id: 'util-add-admin',
       title: 'Add Admin',
       type: 'item',
       url: '/add/admin',
@@ -53,7 +56,7 @@ const utilities = {
       breadcrumbs: false
     },
     {
-      id: 'util-color',
+      id: 'util-all-admins',
       title: 'All Admins',
       type: 'item',
       url: '/all/admin',
@@ -61,21 +64,21 @@ const utilities = {
       breadcrumbs: false
     },
     {
-      id: 'util-color',
+      id: 'util-driver-safety',
       title: 'Driver Safety Caution',
       type: 'item',
       url: '/driver/safety',
       icon: icons.GiTowTruck,
       breadcrumbs: false
+    },
+    {
+      id: 'util-add-business',
+      title: 'Add Business',
+      type: 'item',
+      url: '/add/business',
+      icon: icons.MdBusinessCenter, // 👈 Business icon
+      breadcrumbs: false
     }
-    // {
-    //   id: 'util-shadow',
-    //   title: 'Shadow',
-    //   type: 'item',
-    //   url: '/shadow',
-    //   icon: icons.IconShadow,
-    //   breadcrumbs: false
-    // }
   ]
 };
 
