@@ -41,7 +41,7 @@ const Business = () => {
   });
   const { enqueueSnackbar } = useSnackbar();
 
-  const API_URL = 'http://localhost:4000/api/v1/';
+  const API_URL = 'https://api.realhero.in/api/v1/';
 
   useEffect(() => {
     fetchBusinesses();
@@ -94,7 +94,7 @@ const Business = () => {
         await axios.put(`${API_URL}/${selectedBusiness._id}`, formData);
         enqueueSnackbar('Business updated successfully', { variant: 'success' });
       } else {
-        await axios.post('http://localhost:4000/api/v1/create', formData);
+        await axios.post('https://api.realhero.in/api/v1/create', formData);
         enqueueSnackbar('Business added successfully', { variant: 'success' });
       }
       handleClose();

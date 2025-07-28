@@ -121,7 +121,7 @@ const VoiceChat = ({ user }) => {
         >
           <audio
             controls
-            src={`http://localhost:4000${note.url}`}
+            src={`https://api.realhero.in${note.url}`}
             className="w-full mb-2"
           />
 
@@ -200,7 +200,7 @@ const VoiceChat = ({ user }) => {
               <audio
                 controls
                 src={
-                  "http://localhost:4000api/v1/uploads/voice/1750430583895-voice-1750430583536.webm"
+                  "https://api.realhero.inapi/v1/uploads/voice/1750430583895-voice-1750430583536.webm"
                 }
                 className="w-full mb-2"
               />

@@ -4,6 +4,7 @@ import { FiUpload, FiTrash } from "react-icons/fi";
 import { MdLocationOn } from "react-icons/md";
 import { FaRegImage, FaVideo } from "react-icons/fa";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 const AddVideo = () => {
   const [images, setImages] = useState([]);
@@ -14,6 +15,7 @@ const AddVideo = () => {
   const [location, setLocation] = useState("");
   const [uploading, setUploading] = useState(false);
   const [emergency, setEmergency] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (images.length > 0) {
@@ -68,12 +70,12 @@ const AddVideo = () => {
     formData.append("location", location);
     formData.append("emergency", emergency);
 
-    const token = JSON.parse(Cookies.get("Token"));
+    const token = Cookies.get("Token");
 
     try {
       setUploading(true);
       const res = await axios.post(
-        "  http://localhost:4000/api/v1/video/new",
+        "https://api.realhero.in/api/v1/video/new",
         formData,
         {
           headers: {
@@ -89,6 +91,7 @@ const AddVideo = () => {
       setVideoPreview(null);
       setCaption("");
       setLocation("");
+      navigate("/");
     } catch (err) {
       console.error("Upload failed:", err);
       alert("Upload failed.");
@@ -99,6 +102,18 @@ const AddVideo = () => {
 
   return (
     <div className="max-w-md mx-auto p-4 mt-20 bg-white shadow-xl rounded-2xl">
+      {/* Loader overlay */}
+      {uploading && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="flex flex-col items-center">
+            <svg className="animate-spin h-10 w-10 text-blue-600 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            <span className="text-white text-lg font-semibold">Uploading...</span>
+          </div>
+        </div>
+      )}
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
         Add Video
       </h2>

@@ -5,8 +5,8 @@ const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const app = express();
 const path = require("path");
-app.use(bodyParser.json({ limit: "100mb" }));
-app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
+app.use(bodyParser.json({ limit: "1000mb" }));
+app.use(bodyParser.urlencoded({ limit: "1000mb", extended: true }));
 app.use(cors());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
@@ -25,6 +25,8 @@ const voiceRoute = require("./routes/voiceRoute");
 const driverIdCardRoute = require("./routes/driverIdCardRoute");
 const buisnessRoutw = require("./routes/businessRoute");
 const normalUserRoute = require("./routes/normalUserRoute");
+
+
 
 app.use("/api/v1/", adminRoute);
 app.use("/api/v1/", userRoute);

@@ -36,7 +36,7 @@ const VideoCard = forwardRef(({ video }, ref) => {
 
     try {
       const response = await axios.put(
-        `http://localhost:4000/api/v1/toggle/like/${id}`,
+        `https://api.realhero.in/api/v1/toggle/like/${id}`,
         {},
         {
           headers: {
@@ -107,7 +107,7 @@ const VideoCard = forwardRef(({ video }, ref) => {
   const loadComments = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/v1/video/${video._id}/comments`
+        `https://api.realhero.in/api/v1/video/${video._id}/comments`
       );
       if (response.data.success) {
         setComments(response.data.comments);
@@ -131,7 +131,7 @@ const VideoCard = forwardRef(({ video }, ref) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `http://localhost:4000/api/v1/video/${video._id}/comment`,
+        `https://api.realhero.in/api/v1/video/${video._id}/comment`,
         { comment: newComment },
         {
           headers: {
@@ -164,7 +164,7 @@ const VideoCard = forwardRef(({ video }, ref) => {
 
     try {
       const response = await axios.delete(
-        `http://localhost:4000/api/v1/video/${video._id}/comment/${commentId}`,
+        `https://api.realhero.in/api/v1/video/${video._id}/comment/${commentId}`,
         {
           headers: {
             authorization: `${token}`,
@@ -186,13 +186,13 @@ const VideoCard = forwardRef(({ video }, ref) => {
     alert(`Sharing to ${platform}: ${video.video.url}`);
   };
 
-  console.log(`http://localhost:4000${video.video.url}`);
+  console.log(`https://api.realhero.in${video.video.url}`);
 
   return (
     <div className="relative w-full h-screen flex justify-center items-center bg-black">
       <video
         ref={ref}
-        src={`http://localhost:4000${video?.video?.url}`}
+        src={`https://api.realhero.in${video?.video?.url}`}
         className="w-full h-full object-cover"
         playsInline
         loop

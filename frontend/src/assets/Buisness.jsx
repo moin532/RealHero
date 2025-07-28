@@ -18,7 +18,7 @@ const Business = () => {
 
   const fetchBusinesses = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/api/v1/buisness");
+      const response = await axios.get("https://api.realhero.in/api/v1/buisness");
 
       if (response.data) {
         setBusinesses(response.data.data);

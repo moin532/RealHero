@@ -18,7 +18,7 @@ const NormalUserLogin = () => {
     setMessage("");
     setError("");
     try {
-      const res = await fetch("http://localhost:4000/api/v1/normaluser/login", {
+      const res = await fetch("https://api.realhero.in/api/v1/normaluser/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

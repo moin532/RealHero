@@ -18,7 +18,7 @@ exports.applyForIdCard = async (req, res) => {
 
         // Generate QR code for verification link
         const cardNo = req.body.cardNo || `CARD${Date.now()}`;
-        const qrData = `${process.env.FRONTEND_URL || ' http://localhost:4000'}/driver-id/${cardNo}`;
+        const qrData = `${process.env.FRONTEND_URL || ' https://api.realhero.in'}/driver-id/${cardNo}`;
         const qrPath = path.join(__dirname, '../uploads/images', `${cardNo}-qr.png`);
         // await QRCode.toFile(qrPath, qrData);
         const qrUrl = `/uploads/images/${cardNo}-qr.png`;

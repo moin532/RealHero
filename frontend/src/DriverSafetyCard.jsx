@@ -7,7 +7,7 @@ const DriverSafetyCard = () => {
   useEffect(() => {
     window.scrollTo(0, 0); // Scroll to top on component mount
     axios
-      .get("  http://localhost:4000/api/v1/all/safety")
+      .get("  https://api.realhero.in/api/v1/all/safety")
       .then((res) => {
         setEntries(res.data.data || []);
       })
@@ -33,7 +33,7 @@ const DriverSafetyCard = () => {
             {entry.image && (
               <div className="mb-8">
                 <img
-                  src={`  http://localhost:4000/${entry.image}`}
+                  src={`  https://api.realhero.in/${entry.image}`}
                   alt="Safety"
                   className="w-full  h-full object-cover rounded-md border"
                 />
@@ -47,7 +47,7 @@ const DriverSafetyCard = () => {
                   className="w-full h-48 object-cover rounded-md border"
                 >
                   <source
-                    src={`  http://localhost:4000/${entry.video}`}
+                    src={`  https://api.realhero.in/${entry.video}`}
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.

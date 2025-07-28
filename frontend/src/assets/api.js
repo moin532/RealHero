@@ -50,7 +50,7 @@ export const getAddressFromCurrentLocation = () => {
 
 // Voice Chat API
 
-const API_BASE = "http://localhost:4000/api/v1";
+const API_BASE = "https://api.realhero.in/api/v1";
 // const token = Cookies.get("Token") ? JSON.parse(Cookies.get("Token")) : null;
 const token = Cookies.get("Token") || null;
 export async function uploadVoiceNote(file) {

@@ -88,7 +88,7 @@ const ProfilePage = () => {
       }
 
       const response = await axios.delete(
-        `http://localhost:4000/api/v1/admin/product/${videoId}`,
+        `https://api.realhero.in/api/v1/admin/product/${videoId}`,
         {
           headers: {
             authorization: `${token}`,
@@ -142,7 +142,7 @@ const ProfilePage = () => {
     }
     try {
       const res = await axios.post(
-        "http://localhost:4000/api/driver-id/apply",
+        "https://api.realhero.in/api/driver-id/apply",
         data,
         {
           headers: {
@@ -172,7 +172,7 @@ const ProfilePage = () => {
       if (!userId || !token) return;
       try {
         const res = await axios.get(
-          `http://localhost:4000/api/driver-id/user/${userId}`,
+          `https://api.realhero.in/api/driver-id/user/${userId}`,
           {
             headers: { authorization: token },
           }
@@ -328,7 +328,7 @@ const ProfilePage = () => {
                 >
                   <div className="relative aspect-video">
                     <video
-                      src={`  http://localhost:4000${videoData?.video?.url}`}
+                      src={`  https://api.realhero.in${videoData?.video?.url}`}
                       className="w-full h-full object-cover"
                       muted
                       loop
@@ -778,7 +778,7 @@ const ProfilePage = () => {
                                 src={
                                   cardPreview.photoUrl
                                     ? cardPreview.photoUrl.startsWith("/")
-                                      ? `http://localhost:4000${cardPreview.photoUrl}`
+                                      ? `https://api.realhero.in${cardPreview.photoUrl}`
                                       : cardPreview.photoUrl
                                     : ""
                                 }

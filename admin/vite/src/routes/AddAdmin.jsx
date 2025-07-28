@@ -35,7 +35,7 @@ const AddAdmin = () => {
   const handleSubmit = async () => {
     try {
       const token = JSON.parse(Cookies.get('Token'));
-      const res = await axios.post('  http://localhost:4000/api/v1/add/admin', formData, {
+      const res = await axios.post('  https://api.realhero.in/api/v1/add/admin', formData, {
         headers: {
           Authorization: `${token}`
         }
