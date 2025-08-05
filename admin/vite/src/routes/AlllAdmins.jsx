@@ -22,8 +22,7 @@ const AlllAdmins = () => {
   const isMobile = useMediaQuery('(max-width:600px)');
 
   useEffect(() => {
-    const token = Cookies.get('Token') ? JSON.parse(Cookies.get('Token')) : null;
-
+ const token = Cookies.get('Token');
     const HandleFetch = async () => {
       try {
         const response = await axios.post(
@@ -48,8 +47,7 @@ const AlllAdmins = () => {
 
   // ✅ Delete Handler
   const handleDelete = async (id) => {
-    const token = Cookies.get('Token') ? JSON.parse(Cookies.get('Token')) : null;
-
+ const token = Cookies.get('Token');
     window.alert('Are you sure you want to delete this admin? This action cannot be undone.');
     try {
       await axios.delete(`  https://api.realhero.in/api/v1/delete/admin/${id}`, {

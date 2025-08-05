@@ -20,6 +20,7 @@ const AllDrivers = Loadable(lazy(() => import('../routes/AllDrivers')));
 const DetailDriver = Loadable(lazy(() => import('../routes/DriverDetail')));
 const DriverRequest = Loadable(lazy(() => import('../routes/DriverRequests')));
 const DriversCaution = Loadable(lazy(() => import('../routes/DriversCaution')));
+const DriverMapDashboard = Loadable(lazy(() => import('../routes/components/DriverMapDashboard')));
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
@@ -73,6 +74,10 @@ const MainRoutes = {
     {
       path: '/add/business',
       element: <Business />
+    },
+    {
+      path: '/driver/map',
+      element: <DriverMapDashboard />
     }
     // {
     //   path: 'typography',

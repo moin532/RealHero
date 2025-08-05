@@ -1,4 +1,6 @@
 const Product = require("../models/MyVideoModel");
+const fs = require('fs');
+const path = require('path');
 
 const handleFileUpload = require("../utils/HandleFileUpload");
 
@@ -75,7 +77,6 @@ exports.createProduct = async (req, res) => {
 
     req.body.user = req.user._id;
 
-    console.log(savedFiles);
     // Attach uploaded file data to request body
     req.body.video = savedFiles.video;
     req.body.images = savedFiles.images;
@@ -93,14 +94,15 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-exports.getAllPRoducts = async (req, res) => {
-  try {
-    const products = await Product.find({});
 
-    if (!products) {
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find({}).sort({ createdAt: 1 }); // 1 = ascending (oldest first)
+
+    if (!products || products.length === 0) {
       return res.status(200).json({
-        succes: false,
-        msg: "products does not found",
+        success: false,
+        msg: "Products not found",
       });
     }
 
@@ -108,13 +110,15 @@ exports.getAllPRoducts = async (req, res) => {
       success: true,
       products,
     });
+
   } catch (error) {
     return res.status(400).json({
       success: false,
-      err: error,
+      error: error.message,
     });
   }
 };
+
 
 exports.getAllAdminPrd = async (req, res) => {
   try {
@@ -235,6 +239,9 @@ exports.toggleLike = async (req, res) => {
 };
 exports.dltPrd = async (req, res) => {
   try {
+
+
+
     const product = await Product.findById(req.params.id);
 
     if (!product) {
@@ -244,18 +251,72 @@ exports.dltPrd = async (req, res) => {
       });
     }
 
-    await product.remove();
+    // Check if user is authenticated
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({
+        success: false,
+        msg: "Authentication required to delete videos",
+      });
+    }
+    console.log(product)
+
+    // Check if user owns this video (optional security check)
+    if (product.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        msg: "You can only delete your own videos",
+      });
+    }
+
+    // Delete video file from file system if exists
+    if (product.video && product.video.url) {
+      const videoPath = path.join(__dirname, '..', product.video.url);
+      if (fs.existsSync(videoPath)) {
+        try {
+          fs.unlinkSync(videoPath);
+          console.log('Video file deleted:', videoPath);
+        } catch (fileError) {
+          console.error('Error deleting video file:', fileError);
+          // Continue with deletion even if file deletion fails
+        }
+      } else {
+        console.log('Video file not found at path:', videoPath);
+      }
+    }
+
+    // Delete image files from file system if exist
+    if (product.images && product.images.length > 0) {
+      product.images.forEach((image) => {
+        if (image.url) {
+          const imagePath = path.join(__dirname, '..', image.url);
+          if (fs.existsSync(imagePath)) {
+            try {
+              fs.unlinkSync(imagePath);
+              console.log('Image file deleted:', imagePath);
+            } catch (fileError) {
+              console.error('Error deleting image file:', fileError);
+              // Continue with deletion even if file deletion fails
+            }
+          } else {
+            console.log('Image file not found at path:', imagePath);
+          }
+        }
+      });
+    }
+
+    // Delete from MongoDB
+    await Product.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
       success: true,
-      msg: "product successfully removed",
+      msg: "Video and associated files successfully deleted",
     });
   } catch (error) {
-    console.log(error);
+    console.log('Delete error:', error);
 
     return res.status(500).json({
-      succes: false,
-      err: error,
+      success: false,
+      err: error.message,
     });
   }
 };
@@ -317,6 +378,8 @@ exports.addComment = async (req, res) => {
     const { videoId } = req.params;
     const { comment } = req.body;
     const userId = req.user._id;
+
+    console.log(req.body, "ededed", userId)
 
     if (!comment || comment.trim() === "") {
       return res.status(400).json({

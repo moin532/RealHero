@@ -16,4 +16,5 @@ router.get("/:id", getBusinessById);
 router.put("/update/:id", updateBusiness);
 router.delete("/delete/:id", deleteBusiness);
 
+
 module.exports = router;

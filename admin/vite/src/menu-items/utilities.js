@@ -8,6 +8,7 @@ import { FaHireAHelper } from 'react-icons/fa6';
 import { BsPersonVcard } from 'react-icons/bs';
 import { GiTowTruck } from 'react-icons/gi';
 import { MdBusinessCenter } from 'react-icons/md'; // 👈 Added business icon
+import { FaMapPin } from "react-icons/fa6";
 
 // constant
 const icons = {
@@ -21,7 +22,9 @@ const icons = {
   FaHireAHelper,
   BsPersonVcard,
   GiTowTruck,
-  MdBusinessCenter // 👈 Include in icon object
+  MdBusinessCenter,// 👈 Include in icon object
+  FaMapPin
+
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -45,6 +48,14 @@ const utilities = {
       type: 'item',
       url: '/DriverRequest',
       icon: icons.FaHireAHelper,
+      breadcrumbs: false
+    },
+    {
+      id: 'util-requests',
+      title: 'Driver Maps',
+      type: 'item',
+      url: '/driver/map',
+      icon: icons.FaMapPin,
       breadcrumbs: false
     },
     {

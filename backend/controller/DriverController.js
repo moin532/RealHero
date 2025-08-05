@@ -1,7 +1,8 @@
 const DriverSafety = require("../models/DriverSafetyModel");
 const fs = require("fs");
 const path = require("path");
-
+const DriverLocationSharing = require("../models/DriverLocationSharing");
+const User = require("../models/userModel");
 // Add new safety entry
 exports.createSafety = async (req, res) => {
   try {
@@ -110,6 +111,76 @@ exports.getAllDetailSafety = async (req, res) => {
 
     res.json({ success: true, data: entry });
   } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+
+
+exports.updateCurrentLocation = async (req, res) => {
+  try {
+    const { latitude, longitude } = req.body;
+    const driverId = req.user._id;
+
+    if (!driverId || !latitude || !longitude) {
+      return res.status(400).json({ success: false, error: "Missing required fields" });
+    }
+
+    const location = await DriverLocationSharing.findOneAndUpdate(
+      { driverId }, // Match existing record
+      {
+        currentLatitude: latitude,
+        currentLongitude: longitude,
+      },
+      {
+        new: true,         // Return updated document
+        upsert: true,      // Create if not exists
+        setDefaultsOnInsert: true,
+      }
+    );
+
+    res.json({ success: true, data: location });
+
+  } catch (error) {
+    console.error("Error updating location:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+
+
+
+
+
+
+exports.getDriverCurrentLocation = async (req, res) => {
+  try {
+    // Step 1: Get all location records
+    const locations = await DriverLocationSharing.find();
+
+    console.log(locations)
+    // Step 2: For each location, manually fetch the user by driverId
+    const dataWithUser = await Promise.all(
+      locations.map(async (loc) => {
+        const user = await User.findById(loc.driverId).select('name number ');
+        return {
+          _id: loc._id,
+          driverId: loc.driverId,
+          currentLatitude: loc.currentLatitude,
+          currentLongitude: loc.currentLongitude,
+          createdAt: loc.createdAt,
+          user: user || null, // in case user not found
+        };
+      })
+    );
+
+    res.json({
+      success: true,
+      data: dataWithUser,
+    });
+
+  } catch (error) {
+    console.error("Error fetching driver locations:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };

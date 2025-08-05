@@ -40,7 +40,8 @@ export default function EarningCard({ isLoading }) {
   };
 
   useEffect(() => {
-    const token = Cookies.get('Token') ? JSON.parse(Cookies.get('Token')) : null;
+    const token = Cookies.get('Token') 
+    // ? JSON.parse(Cookies.get('Token')) : null;
 
     if (!token) {
       Navigate('/pages/login');

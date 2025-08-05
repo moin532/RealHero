@@ -5,6 +5,7 @@ import { MdLocationOn } from "react-icons/md";
 import { FaRegImage, FaVideo } from "react-icons/fa";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { getAddressFromCurrentLocation } from "../assets/api";
 
 const AddVideo = () => {
   const [images, setImages] = useState([]);
@@ -15,6 +16,8 @@ const AddVideo = () => {
   const [location, setLocation] = useState("");
   const [uploading, setUploading] = useState(false);
   const [emergency, setEmergency] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +38,42 @@ const AddVideo = () => {
       return () => URL.revokeObjectURL(url);
     }
   }, [video]);
+
+
+  
+    useEffect(() => {
+      const fetchAddress = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const addr = await getAddressFromCurrentLocation();
+          setLocation(addr);
+        } catch (err) {
+          setError(err.message);
+          setLocation("");
+        }
+        setLoading(false);
+      };
+  
+      fetchAddress(); // Automatically run on mount
+    }, []);
+    
+  // useEffect(() => {
+  //   const fetchAddress = async () => {
+  //     setLoading(true);
+  //     setError(null);
+  //     try {
+  //       const addr = await getAddressFromCurrentLocation();
+  //       setLocation(addr);
+  //     } catch (err) {
+  //       setError(err.message);
+  //       setLocation("");
+  //     }
+  //     setLoading(false);
+  //   };
+
+  //   fetchAddress(); // Automatically run on mount
+  // }, []);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -128,14 +167,31 @@ const AddVideo = () => {
 
       <div className="flex items-center gap-2 mb-4">
         <MdLocationOn className="text-xl text-red-500" />
-        <input
-          type="text"
-          required
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          placeholder="Enter your current location"
-          className="w-full p-2 border rounded-lg text-sm"
-        />
+        <div className="w-full">
+          <input
+            type="text"
+            required
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder={loading ? "Fetching your location..." : "Enter your current location"}
+            className="w-full p-2 border rounded-lg text-sm"
+            disabled={loading}
+          />
+          {loading && (
+            <div className="flex items-center mt-1 text-xs text-blue-600">
+              <svg className="animate-spin h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+              Getting your location...
+            </div>
+          )}
+          {error && (
+            <div className="mt-1 text-xs text-red-600">
+              {error}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center justify-between mb-4">

@@ -61,4 +61,18 @@ exports.getIdCardByUser = async (req, res) => {
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
+};
+
+// GET /api/driver-id/mobile/:mobile
+exports.getIdCardByMobile = async (req, res) => {
+    try {
+
+        console.log(req.params.mobile, "mobile")
+        const card = await DriverIdCard.findOne({ mobile: req.params.mobile });
+        console.log(card, "card")
+        if (!card) return res.status(404).json({ success: false, error: 'Card not found for mobile number' });
+        res.json({ success: true, card });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
 }; 

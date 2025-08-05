@@ -12,7 +12,6 @@ const driversVideoSchema = new mongoose.Schema({
 
   location: {
     type: String,
-    required: true,
   },
 
   emergency: {

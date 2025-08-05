@@ -8,7 +8,7 @@ const router = express.Router();
 const { authMiddle, authorizeRoles } = require("../middleware/auth");
 const {
   createProduct,
-  getAllPRoducts,
+  getAllProducts,
   UpdateProduct,
   dltPrd,
   getSinglePrd,
@@ -24,7 +24,7 @@ const upload = require("../utils/multer");
 
 router.route("/video/new").post(authMiddle, createProduct);
 
-router.route("/video/all").get(getAllPRoducts);
+router.route("/video/all").get(getAllProducts);
 router.route("/toggle/like/:id").put(authMiddle, toggleLike);
 
 router.route("/admin/products").get(authMiddle, getAllAdminPrd);
@@ -32,7 +32,7 @@ router.route("/admin/users/posts").get(authMiddle, getuserPosts);
 router.route("/product/:id").get(getSinglePrd);
 
 router.route("/admin/product/:id").put(UpdateProduct);
-router.route("/admin/product/:id").delete(dltPrd);
+router.route("/admin/product/:id").delete(authMiddle, dltPrd);
 
 router.route("/reviews").put(authMiddle, cretePrdReview);
 

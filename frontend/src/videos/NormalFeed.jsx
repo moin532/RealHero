@@ -11,7 +11,7 @@ const NormalFeed = () => {
   }, [dispatch]);
 
   return (
-    <div>
+    <div className="pb-16 md:pb-0">
       <VideoFeed myvideos={myvideos} />
     </div>
   );

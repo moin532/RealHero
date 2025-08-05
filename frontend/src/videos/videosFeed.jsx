@@ -65,9 +65,9 @@ const VideoFeed = ({ myvideos, emergency }) => {
   }, [slides]);
 
   return (
-    <div className="flex flex-col items-center overflow-y-scroll h-screen snap-y snap-mandatory">
-      {slides.map((slide, index) => (
-        <div key={index} className="snap-start w-full ">
+    <div className=" flex flex-col items-center overflow-y-scroll h-[calc(100vh-80px)] snap-y snap-mandatory">
+      {slides.map((slide, index) => ( 
+        <div key={index} className="snap-start w-full  ">
           {slide.type === "video" ? (
             <VideoCard
               video={slide.data}

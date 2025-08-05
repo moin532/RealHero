@@ -25,8 +25,7 @@ const DriverDetail = () => {
   const [posts, setposts] = useState([]);
 
   console.log(posts);
-  const token = Cookies.get('Token') ? JSON.parse(Cookies.get('Token')) : null;
-
+  const token = Cookies.get('Token') 
   useEffect(() => {
     const fetchDriver = async () => {
       try {

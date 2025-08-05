@@ -8,6 +8,9 @@ import {
   FaYoutube,
   FaPaperPlane,
   FaTrash,
+  FaWhatsapp,
+  FaCopy,
+  FaLink,
 } from "react-icons/fa";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -20,14 +23,14 @@ const VideoCard = forwardRef(({ video }, ref) => {
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   // Ref for comment section to detect clicks outside
   const commentSectionRef = useRef(null);
 
   const handleLike = async (id) => {
     const token = Cookies.get("Token")
-      ? JSON.parse(Cookies.get("Token"))
-      : null;
+      
 
     if (!token) {
       alert("Please login to like this video");
@@ -121,13 +124,11 @@ const VideoCard = forwardRef(({ video }, ref) => {
     if (!newComment.trim()) return;
 
     const token = Cookies.get("Token")
-      ? JSON.parse(Cookies.get("Token"))
-      : null;
+  
     if (!token) {
       alert("Please login to comment");
       return;
     }
-
     setLoading(true);
     try {
       const response = await axios.post(
@@ -155,8 +156,7 @@ const VideoCard = forwardRef(({ video }, ref) => {
 
   const handleDeleteComment = async (commentId) => {
     const token = Cookies.get("Token")
-      ? JSON.parse(Cookies.get("Token"))
-      : null;
+      
     if (!token) {
       alert("Please login to delete comments");
       return;
@@ -183,10 +183,64 @@ const VideoCard = forwardRef(({ video }, ref) => {
   };
 
   const handleShare = (platform) => {
-    alert(`Sharing to ${platform}: ${video.video.url}`);
+    const videoUrl = `https://api.realhero.in${video.video?.url}` || window.location.href;
+    const videoTitle = video.title || 'Check out this amazing video!';
+    const shareText = `${videoTitle} - ${videoUrl}`;
+
+    switch (platform) {
+      case 'WhatsApp':
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+        window.open(whatsappUrl, '_blank');
+        break;
+        
+      case 'Instagram':
+        // Instagram doesn't support direct URL sharing, so we'll copy the link
+        copyToClipboard(videoUrl);
+        alert('Link copied! You can now paste it in Instagram.');
+        break;
+        
+      case 'Facebook':
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(videoUrl)}`;
+        window.open(facebookUrl, '_blank');
+        break;
+        
+      case 'YouTube':
+        // YouTube doesn't support direct sharing, copy link instead
+        copyToClipboard(videoUrl);
+        alert('Link copied! You can share it on YouTube.');
+        break;
+        
+      default:
+        alert(`Sharing to ${platform}: ${videoUrl}`);
+    }
+    
+    setShowShareOptions(false);
   };
 
-  console.log(`https://api.realhero.in${video.video.url}`);
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    }
+  };
+
+  const handleCopyUrl = () => {
+    const videoUrl = video.video?.url || window.location.href;
+    copyToClipboard(videoUrl);
+    setShowShareOptions(false);
+  };
+
 
   return (
     <div className="relative w-full h-screen flex justify-center items-center bg-black">
@@ -236,25 +290,71 @@ const VideoCard = forwardRef(({ video }, ref) => {
 
           {/* Share Options */}
           {showShareOptions && (
-            <div className="absolute right-10 bottom-0 flex flex-col gap-2 bg-black bg-opacity-70 p-2 rounded">
+            <div className="absolute right-10 bottom-0 flex flex-col gap-2 bg-black bg-opacity-80 p-3 rounded-lg shadow-lg border border-gray-600">
+              {/* WhatsApp */}
+              <button
+                onClick={() => handleShare("WhatsApp")}
+                className="flex items-center gap-2 hover:text-green-500 transition-colors p-1 rounded"
+                title="Share on WhatsApp"
+              >
+                <FaWhatsapp className="text-lg" />
+                <span className="text-xs text-white">WhatsApp</span>
+              </button>
+              
+              {/* Instagram */}
               <button
                 onClick={() => handleShare("Instagram")}
-                className="hover:text-pink-500"
+                className="flex items-center gap-2 hover:text-pink-500 transition-colors p-1 rounded"
+                title="Share on Instagram"
               >
-                <FaInstagram />
+                <FaInstagram className="text-lg" />
+                <span className="text-xs text-white">Instagram</span>
               </button>
+              
+              {/* Facebook */}
               <button
                 onClick={() => handleShare("Facebook")}
-                className="hover:text-blue-500"
+                className="flex items-center gap-2 hover:text-blue-500 transition-colors p-1 rounded"
+                title="Share on Facebook"
               >
-                <FaFacebook />
+                <FaFacebook className="text-lg" />
+                <span className="text-xs text-white">Facebook</span>
               </button>
+              
+              {/* YouTube */}
               <button
                 onClick={() => handleShare("YouTube")}
-                className="hover:text-red-600"
+                className="flex items-center gap-2 hover:text-red-600 transition-colors p-1 rounded"
+                title="Share on YouTube"
               >
-                <FaYoutube />
+                <FaYoutube className="text-lg" />
+                <span className="text-xs text-white">YouTube</span>
               </button>
+              
+              {/* Copy URL */}
+              <div className="border-t border-gray-600 pt-2 mt-1">
+                <button
+                  onClick={handleCopyUrl}
+                  className={`flex items-center gap-2 transition-colors p-1 rounded w-full ${
+                    copySuccess 
+                      ? 'text-green-400' 
+                      : 'hover:text-blue-400 text-gray-300'
+                  }`}
+                  title="Copy video URL"
+                >
+                  {copySuccess ? (
+                    <>
+                      <FaLink className="text-lg" />
+                      <span className="text-xs">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaCopy className="text-lg" />
+                      <span className="text-xs text-white">Copy URL</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -264,13 +364,48 @@ const VideoCard = forwardRef(({ video }, ref) => {
       {showComments && (
         <div
           ref={commentSectionRef}
-          className="absolute bottom-0 left-0 w-full bg-black bg-opacity-90 text-white max-h-[50%] overflow-y-auto rounded-t-xl"
+          className="absolute bottom-0 left-0 w-full bg-black bg-opacity-90 text-white max-h-[50%] rounded-t-xl flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="p-4 space-y-3">
-            <h3 className="text-lg font-bold mb-4">
+          {/* Header */}
+          <div className="p-4 border-b border-gray-600">
+            <h3 className="text-lg font-bold">
               Comments ({comments.length})
             </h3>
+          </div>
+
+          {/* Comment Input - At the top */}
+          <div className="w-full p-4 border-b border-gray-600 bg-gray-900">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && !loading) {
+                    handleCommentSubmit();
+                  }
+                }}
+                placeholder="Add a comment..."
+                className="flex-1 bg-gray-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={loading}
+              />
+              <button
+                onClick={handleCommentSubmit}
+                disabled={loading || !newComment.trim()}
+                className="text-blue-400 text-xl p-2 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <FaPaperPlane />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Comments List - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {comments?.length > 0 ? (
               comments?.map((comment, idx) => (
                 <div
@@ -303,38 +438,8 @@ const VideoCard = forwardRef(({ video }, ref) => {
                 </div>
               ))
             ) : (
-              <p className="text-sm text-gray-400">No comments yet.</p>
+              <p className="text-sm text-gray-400">No comments yet. Be the first to comment!</p>
             )}
-          </div>
-
-          {/* Comment Input - Fixed positioning */}
-          <div className="w-full p-4 border-t border-gray-600 bg-gray-900 sticky bottom-50  mb-56">
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter" && !loading) {
-                    handleCommentSubmit();
-                  }
-                }}
-                placeholder="Add a comment..."
-                className="flex-1 bg-gray-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-                disabled={loading}
-              />
-              <button
-                onClick={handleCommentSubmit}
-                disabled={loading || !newComment.trim()}
-                className="text-blue-400 text-xl p-2 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <FaPaperPlane />
-                )}
-              </button>
-            </div>
           </div>
         </div>
       )}

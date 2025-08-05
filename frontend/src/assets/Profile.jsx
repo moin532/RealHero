@@ -61,10 +61,80 @@ const ProfilePage = () => {
     memberAddress: "",
     photo: null,
   });
+
+  // Function to generate 5-digit card number
+  const generateCardNumber = () => {
+    return Math.floor(10000 + Math.random() * 90000).toString();
+  };
+
+  // Function to get current date in YYYY-MM-DD format
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
+  // Function to get expiry date (current date + 1 year)
+  const getExpiryDate = () => {
+    const today = new Date();
+    const expiryDate = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+    return expiryDate.toISOString().split('T')[0];
+  };
+
+  // Function to check if card is valid
+  const isCardValid = (expiryDate) => {
+    if (!expiryDate) return false;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    return today <= expiry;
+  };
+
+  // Function to get remaining validity days
+  const getRemainingDays = (expiryDate) => {
+    if (!expiryDate) return 0;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
+  };
+
+  // Function to initialize form with auto-generated card details
+  const initializeFormWithCardDetails = () => {
+    setFormData(prev => ({
+      ...prev,
+      cardNo: generateCardNumber(),
+      issueDate: getCurrentDate(),
+      expiryDate: getExpiryDate(),
+    }));
+  };
+
+  // Function to check if card already exists by mobile number
+  const checkExistingCard = async (mobile) => {
+    if (!mobile) return null;
+    
+    const token = Cookies.get("Token");
+    if (!token) return null;
+    
+    try {
+      const res = await axios.get(
+        `https://api.realhero.in/api/driver-id/mobile/${mobile}`,
+        {
+          headers: { authorization: token },
+        }
+      );
+      if (res.data.success && res.data.card) {
+        return res.data.card;
+      }
+    } catch (err) {
+      // No card found
+    }
+    return null;
+  };
   const [cardPreview, setCardPreview] = useState(null);
   const [qrValue, setQrValue] = useState("");
   const [cardId, setCardId] = useState("");
   const [showBack, setShowBack] = useState(false);
+  const [isCheckingCard, setIsCheckingCard] = useState(false);
 
   const handleNavigate = () => {
     navigate("/salah");
@@ -79,8 +149,7 @@ const ProfilePage = () => {
       setIsDeleting(true);
       setDeletingVideoId(videoId);
       const token = Cookies.get("Token")
-        ? JSON.parse(Cookies.get("Token"))
-        : null;
+        
 
       if (!token) {
         alert("Please login to delete videos");
@@ -129,13 +198,18 @@ const ProfilePage = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate that card details are generated
+    if (!formData.cardNo || !formData.issueDate || !formData.expiryDate) {
+      alert("Card details not generated. Please try again.");
+      return;
+    }
+    
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       data.append(key, value);
     });
-    const token = Cookies.get("Token")
-      ? JSON.parse(Cookies.get("Token"))
-      : null;
+    const token = Cookies.get("Token");
     const userId = myuser?._id;
     if (userId) {
       data.append("userId", userId);
@@ -157,6 +231,7 @@ const ProfilePage = () => {
           window.location.origin + "/driver-id/" + res.data.card.cardNo
         );
         setCardId(res.data.card._id);
+        setIsModalOpen(false); // Close modal after successful submission
       }
     } catch (err) {
       alert("Failed to apply: " + err.message);
@@ -165,12 +240,14 @@ const ProfilePage = () => {
 
   useEffect(() => {
     const fetchIdCard = async () => {
-      const token = Cookies.get("Token")
-        ? JSON.parse(Cookies.get("Token"))
-        : null;
+          const token = Cookies.get("Token");
       const userId = myuser?._id;
+      const userMobile = myuser?.number || user?.user?.number;
+      
       if (!userId || !token) return;
+      
       try {
+        // First try to fetch by userId
         const res = await axios.get(
           `https://api.realhero.in/api/driver-id/user/${userId}`,
           {
@@ -183,14 +260,36 @@ const ProfilePage = () => {
             window.location.origin + "/driver-id/" + res.data.card.cardNo
           );
           setCardId(res.data.card._id);
+          return;
         }
       } catch (err) {
-        // No card found is not an error
+        // No card found by userId, try mobile number
+      }
+      
+      // If no card found by userId, try by mobile number
+      if (userMobile) {
+        try {
+          const res = await axios.get(
+            `https://api.realhero.in/api/driver-id/mobile/${userMobile}`,
+            {
+              headers: { authorization: token },
+            }
+          );
+          if (res.data.success && res.data.card) {
+            setCardPreview(res.data.card);
+            setQrValue(
+              window.location.origin + "/driver-id/" + res.data.card.cardNo
+            );
+            setCardId(res.data.card._id);
+          }
+        } catch (err) {
+          // No card found by mobile number either
+        }
       }
     };
     fetchIdCard();
     // Only run when user is loaded
-  }, [myuser?._id]);
+  }, [myuser?._id, user?.user?.number]);
 
   const handleDownload = async () => {
     const cardDiv = document.getElementById("driver-id-card-preview");
@@ -278,16 +377,63 @@ const ProfilePage = () => {
                   <FiPlus />
                   More Options
                 </button>
-                <button
-                  className="flex items-center gap-2  bg-cyan-500 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors shadow-md"
-                  onClick={() => {
-                    setIsModalOpen(true);
-                    setSelectedOption("applyIdCard");
-                  }}
-                >
-                  <FiPlus />
-                  Apply for Id card
-                </button>
+                {!cardPreview ? (
+                  <button
+                    className={`flex items-center gap-2 px-6 py-2 rounded-full transition-colors shadow-md ${
+                      isCheckingCard 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-cyan-500 text-white hover:bg-green-600'
+                    }`}
+                    onClick={async () => {
+                      if (isCheckingCard) return;
+                      
+                      setIsCheckingCard(true);
+                      try {
+                        // Check if card already exists by mobile number
+                        const userMobile = myuser?.number || user?.user?.number;
+                        if (userMobile) {
+                          const existingCard = await checkExistingCard(userMobile);
+                          if (existingCard) {
+                            setCardPreview(existingCard);
+                            setQrValue(
+                              window.location.origin + "/driver-id/" + existingCard.cardNo
+                            );
+                            setCardId(existingCard._id);
+                            setIsModalOpen(true);
+                            setSelectedOption("applyIdCard");
+                            return;
+                          }
+                        }
+                        
+                        // If no existing card, proceed with application
+                        setIsModalOpen(true);
+                        setSelectedOption("applyIdCard");
+                        initializeFormWithCardDetails();
+                      } finally {
+                        setIsCheckingCard(false);
+                      }
+                    }}
+                    disabled={isCheckingCard}
+                  >
+                    {isCheckingCard ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <FiPlus />
+                    )}
+                    {isCheckingCard ? 'Checking...' : 'Apply for Id card'}
+                  </button>
+                ) : (
+                  <button
+                    className="flex items-center gap-2  bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors shadow-md"
+                    onClick={() => {
+                      setIsModalOpen(true);
+                      setSelectedOption("applyIdCard");
+                    }}
+                  >
+                    <FiUser />
+                    View ID Card
+                  </button>
+                )}
                 <button
                   className="flex items-center gap-2   bg-yellow-600 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors shadow-md"
                   onClick={() => {
@@ -563,31 +709,7 @@ const ProfilePage = () => {
                       className="p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400"
                       required
                     />
-                    <input
-                      name="cardNo"
-                      value={formData.cardNo}
-                      onChange={handleFormChange}
-                      placeholder="Card No (optional)"
-                      className="p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400"
-                    />
-                    <input
-                      name="issueDate"
-                      value={formData.issueDate}
-                      onChange={handleFormChange}
-                      placeholder="Issue Date"
-                      className="p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400"
-                      required
-                    />
-                    <input
-                      name="expiryDate"
-                      value={formData.expiryDate}
-                      onChange={handleFormChange}
-                      placeholder="Expiry Date"
-                      className="p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400"
-                      required
-                    />
-                  </div>
-                  <input
+                     <input
                     name="memberAddress"
                     value={formData.memberAddress}
                     onChange={handleFormChange}
@@ -595,6 +717,25 @@ const ProfilePage = () => {
                     className="p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400 w-full"
                     required
                   />
+                    <div className="col-span-2  p-4 rounded-lg border border-blue-200">
+                      <h4 className="font-semibold text-blue-800 mb-2"> Card Details</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                        <div>
+                          <span className="text-gray-600">Card No:</span>
+                          <span className="ml-2 font-mono font-bold text-blue-700">{formData.cardNo}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Issue Date:</span>
+                          <span className="ml-2 font-mono text-blue-700">{formData.issueDate}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Expiry Date:</span>
+                          <span className="ml-2 font-mono text-blue-700">{formData.expiryDate}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                 
                   <div className="flex flex-col items-center gap-2">
                     <label className="block text-sm font-medium text-gray-700">
                       Photo
@@ -631,6 +772,10 @@ const ProfilePage = () => {
                       minHeight: "480px",
                     }}
                   >
+                    {/* Validity Status Badge */}
+                    <div className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-bold text-white z-10 ${isCardValid(cardPreview.expiryDate) ? 'bg-green-500' : 'bg-red-500'}`}>
+                      {isCardValid(cardPreview.expiryDate) ? 'VALID' : 'EXPIRED'}
+                    </div>
                     {showBack ? (
                       // BACK SIDE DESIGN
                       <div
@@ -680,6 +825,14 @@ const ProfilePage = () => {
                             </span>
                             <span className="w-[60%] border border-red-600 px-2 py-1">
                               {cardPreview.expiryDate}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-[13px] font-bold mt-1">
+                            <span className={`w-[40%] px-2 py-1 rounded-l ${isCardValid(cardPreview.expiryDate) ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+                              STATUS
+                            </span>
+                            <span className={`w-[60%] border px-2 py-1 ${isCardValid(cardPreview.expiryDate) ? 'border-green-600 text-green-700' : 'border-red-600 text-red-700'}`}>
+                              {isCardValid(cardPreview.expiryDate) ? `VALID (${getRemainingDays(cardPreview.expiryDate)} days left)` : 'EXPIRED'}
                             </span>
                           </div>
                         </div>
@@ -869,6 +1022,13 @@ const ProfilePage = () => {
                             <span className="w-[40%]">Date of Birth</span>
                             <span className="w-[5%]">:</span>
                             <span className="w-[55%]">{cardPreview.dob}</span>
+                          </div>
+                          <div className="flex text-[13px] text-gray-700 mb-1">
+                            <span className="w-[40%]">Card Status</span>
+                            <span className="w-[5%]">:</span>
+                            <span className={`w-[55%] font-semibold ${isCardValid(cardPreview.expiryDate) ? 'text-green-600' : 'text-red-600'}`}>
+                              {isCardValid(cardPreview.expiryDate) ? `VALID (${getRemainingDays(cardPreview.expiryDate)} days left)` : 'EXPIRED'}
+                            </span>
                           </div>
                         </div>
                         {/* Bottom colored line */}

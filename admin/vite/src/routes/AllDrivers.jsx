@@ -11,8 +11,7 @@ const AllDrivers = () => {
   const isMobile = useMediaQuery('(max-width:600px)');
 
   useEffect(() => {
-    const token = Cookies.get('Token') ? JSON.parse(Cookies.get('Token')) : null;
-
+ const token = Cookies.get('Token');
     const HandleFetch = async () => {
       try {
         const response = await axios.get('  https://api.realhero.in/api/v1/admin/users', {

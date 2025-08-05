@@ -6,7 +6,6 @@ exports.authMiddle = async (req, res, next) => {
   try {
     const Token = req.headers.authorization;
 
-    console.log(req.headers.authorization);
     if (!Token) {
       return res.status(404).json({
         err: " Token is empty",
@@ -18,7 +17,6 @@ exports.authMiddle = async (req, res, next) => {
 
     const decoded = jwt.verify(token, "moinSecret");
 
-    console.log(decoded)
     // req.user = await User.findById(decoded.user_id);
     req.user = await User.findById(decoded.user_id);
     req.normalUser = await UserNormal.findById(decoded.user_id);
