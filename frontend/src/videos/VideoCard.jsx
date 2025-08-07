@@ -243,7 +243,12 @@ const VideoCard = forwardRef(({ video }, ref) => {
 
 
   return (
-    <div className="relative w-full h-screen flex justify-center items-center bg-black">
+    <div 
+      className="relative w-full h-[90vh] md:h-screen lg:h-screen flex justify-center items-center bg-black"
+      onTouchStart={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+      onTouchEnd={(e) => e.stopPropagation()}
+    >
       <video
         ref={ref}
         src={`https://api.realhero.in${video?.video?.url}`}
@@ -257,7 +262,7 @@ const VideoCard = forwardRef(({ video }, ref) => {
       />
 
       {/* Actions */}
-      <div className="absolute bottom-16  mb-28 right-5 flex flex-col gap-5 text-white text-2xl">
+      <div className="absolute bottom-20 md:bottom-16 mb-28 right-5 flex flex-col gap-5 text-white text-2xl z-30">
         {/* Like */}
         <button
           onClick={() => {
@@ -364,7 +369,7 @@ const VideoCard = forwardRef(({ video }, ref) => {
       {showComments && (
         <div
           ref={commentSectionRef}
-          className="absolute bottom-0 left-0 w-full bg-black bg-opacity-90 text-white max-h-[50%] rounded-t-xl flex flex-col"
+          className="absolute bottom-0 left-0 w-full bg-black bg-opacity-90 text-white max-h-[40%] rounded-t-xl flex flex-col z-40"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

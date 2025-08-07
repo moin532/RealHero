@@ -97,7 +97,7 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({}).sort({ createdAt: 1 }); // 1 = ascending (oldest first)
+    const products = await Product.find({}).sort({ createdAt: -1 }); // 1 = ascending (oldest first)
 
     if (!products || products.length === 0) {
       return res.status(200).json({
@@ -119,6 +119,66 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
+// Get videos excluding already seen ones
+exports.getUnseenProducts = async (req, res) => {
+  try {
+    const { userId, seenVideoIds = [] } = req.body;
+    
+    // If no seen videos provided, return all videos
+    if (!seenVideoIds || seenVideoIds.length === 0) {
+      const products = await Product.find({}).sort({ createdAt: -1 });
+      return res.status(200).json({
+        success: true,
+        products,
+      });
+    }
+
+    // Get videos that haven't been seen
+    const products = await Product.find({
+      _id: { $nin: seenVideoIds }
+    }).sort({ createdAt: -1 });
+
+    if (!products || products.length === 0) {
+      return res.status(200).json({
+        success: false,
+        msg: "No new videos found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      products,
+    });
+
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+// Mark video as viewed
+exports.markVideoAsViewed = async (req, res) => {
+  try {
+    const { videoId, userId } = req.body;
+    
+    // Here you could save to a database table to track viewed videos
+    // For now, we'll just return success
+    // In a real implementation, you'd save to a UserVideoViews collection
+    
+    return res.status(200).json({
+      success: true,
+      message: "Video marked as viewed",
+    });
+
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
 
 exports.getAllAdminPrd = async (req, res) => {
   try {

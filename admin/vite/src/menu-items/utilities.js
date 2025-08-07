@@ -27,70 +27,89 @@ const icons = {
 
 };
 
+// Helper function to check permissions
+const hasPermission = (userPermissions, requiredPermission) => {
+  if (!userPermissions) return false;
+  return userPermissions[requiredPermission] === true;
+};
+
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
 
-const utilities = {
+const utilities = (userPermissions = {}) => ({
   id: 'utilities',
   title: 'Utilities',
   type: 'group',
   children: [
-    {
+    // All Drivers - requires DriverManage permission
+    ...(hasPermission(userPermissions, 'DriverManage') ? [{
       id: 'util-typography',
       title: 'AllDrivers',
       type: 'item',
       url: '/AllDrivers',
       icon: icons.GiSteeringWheel,
       breadcrumbs: false
-    },
-    {
+    }] : []),
+    
+    // Requests - requires DriverRequest permission
+    ...(hasPermission(userPermissions, 'DriverRequest') ? [{
       id: 'util-requests',
       title: 'Requests',
       type: 'item',
       url: '/DriverRequest',
       icon: icons.FaHireAHelper,
       breadcrumbs: false
-    },
-    {
-      id: 'util-requests',
+    }] : []),
+    
+    // Driver Maps - requires DriverMaps permission
+    ...(hasPermission(userPermissions, 'DriverMaps') ? [{
+      id: 'util-driver-maps',
       title: 'Driver Maps',
       type: 'item',
       url: '/driver/map',
       icon: icons.FaMapPin,
       breadcrumbs: false
-    },
-    {
+    }] : []),
+    
+    // Add Admin - requires AdminCreate permission
+    ...(hasPermission(userPermissions, 'AdminCreate') ? [{
       id: 'util-add-admin',
       title: 'Add Admin',
       type: 'item',
       url: '/add/admin',
       icon: icons.BsDatabaseCheck,
       breadcrumbs: false
-    },
-    {
+    }] : []),
+    
+    // All Admins - requires AllAdmins permission
+    ...(hasPermission(userPermissions, 'AllAdmins') ? [{
       id: 'util-all-admins',
       title: 'All Admins',
       type: 'item',
       url: '/all/admin',
       icon: icons.BsPersonVcard,
       breadcrumbs: false
-    },
-    {
+    }] : []),
+    
+    // Driver Safety - requires DriverSafety permission
+    ...(hasPermission(userPermissions, 'DriverSafety') ? [{
       id: 'util-driver-safety',
       title: 'Driver Safety Caution',
       type: 'item',
       url: '/driver/safety',
       icon: icons.GiTowTruck,
       breadcrumbs: false
-    },
-    {
+    }] : []),
+    
+    // Add Business - requires BusinessManage permission
+    ...(hasPermission(userPermissions, 'BusinessManage') ? [{
       id: 'util-add-business',
       title: 'Add Business',
       type: 'item',
       url: '/add/business',
-      icon: icons.MdBusinessCenter, // 👈 Business icon
+      icon: icons.MdBusinessCenter,
       breadcrumbs: false
-    }
+    }] : [])
   ]
-};
+});
 
 export default utilities;

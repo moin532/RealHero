@@ -13,8 +13,8 @@ import { FaHandsHelping } from "react-icons/fa";
 const Footer = () => {
   return (
     <div
-      className="w-full bg-white shadow-md flex justify-around items-center py-3
-      fixed z-50 bottom-0 md:top-0 md:bottom-auto "
+      className="w-full bg-white shadow-md flex justify-around items-center py-1 md:py-2
+      fixed z-40 bottom-0 md:top-0 md:bottom-auto mt-10 "
     >
       {/* Feed */}
       <NavLink

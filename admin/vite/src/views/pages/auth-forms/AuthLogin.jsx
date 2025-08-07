@@ -44,9 +44,8 @@ export default function AuthLogin() {
   };
 
   const HandleSubmit = async () => {
-    console.log('submitt');
-    try {
-      const response = await axios.post('  https://api.realhero.in/api/v1/login', {
+    try { 
+      const response = await axios.post('  https://api.realhero.in/api/v1/admin/login', {
         number: phoneNumber,
         password
       });

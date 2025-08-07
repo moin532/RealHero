@@ -5,8 +5,9 @@ import other from './other';
 
 // ==============================|| MENU ITEMS ||============================== //
 
-const menuItems = {
-  items: [dashboard, pages, utilities]
-};
+// This will be called dynamically to get current permissions
+const createMenuItems = (userPermissions = {}) => ({
+  items: [dashboard, pages, utilities(userPermissions)]
+});
 
-export default menuItems;
+export default createMenuItems;

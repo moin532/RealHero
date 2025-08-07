@@ -7,7 +7,8 @@ import Box from '@mui/material/Box';
 // project imports
 import NavItem from './NavItem';
 import NavGroup from './NavGroup';
-import menuItems from 'menu-items';
+import createMenuItems from 'menu-items';
+import { useUser } from 'contexts/UserContext';
 
 import { useGetMenuMaster } from 'api/menu';
 
@@ -15,9 +16,13 @@ import { useGetMenuMaster } from 'api/menu';
 
 function MenuList() {
   const { menuMaster } = useGetMenuMaster();
+  const { permissions } = useUser();
   const drawerOpen = menuMaster.isDashboardDrawerOpened;
 
   const [selectedID, setSelectedID] = useState('');
+
+  // Create menu items based on user permissions
+  const menuItems = createMenuItems(permissions);
 
   const lastItem = null;
 

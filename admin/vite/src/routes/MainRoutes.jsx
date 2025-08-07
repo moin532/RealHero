@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import ProtectedRoute from 'components/ProtectedRoute';
 import AddAdmin from './AddAdmin';
 import AlllAdmins from './AlllAdmins';
 import AddDriverSafety from './AddDriverSafety';
@@ -45,39 +46,75 @@ const MainRoutes = {
     },
     {
       path: 'AllDrivers',
-      element: <AllDrivers />
+      element: (
+        <ProtectedRoute requiredPermission="DriverManage">
+          <AllDrivers />
+        </ProtectedRoute>
+      )
     },
     {
       path: 'DriverRequest',
-      element: <DriverRequest />
+      element: (
+        <ProtectedRoute requiredPermission="DriverRequest">
+          <DriverRequest />
+        </ProtectedRoute>
+      )
     },
     {
       path: 'driver/detail/:id',
-      element: <DetailDriver />
+      element: (
+        <ProtectedRoute requiredPermission="DriverManage">
+          <DetailDriver />
+        </ProtectedRoute>
+      )
     },
     {
       path: '/add/admin',
-      element: <AddAdmin />
+      element: (
+        <ProtectedRoute requiredPermission="AdminCreate">
+          <AddAdmin />
+        </ProtectedRoute>
+      )
     },
     {
       path: '/all/admin',
-      element: <AlllAdmins />
+      element: (
+        <ProtectedRoute requiredPermission="AllAdmins">
+          <AlllAdmins />
+        </ProtectedRoute>
+      )
     },
     {
       path: '/driver/safety',
-      element: <DriversCaution />
+      element: (
+        <ProtectedRoute requiredPermission="DriverSafety">
+          <DriversCaution />
+        </ProtectedRoute>
+      )
     },
     {
       path: '/add/safety',
-      element: <AddDriverSafety />
+      element: (
+        <ProtectedRoute requiredPermission="DriverSafety">
+          <AddDriverSafety />
+        </ProtectedRoute>
+      )
     },
     {
       path: '/add/business',
-      element: <Business />
+      element: (
+        <ProtectedRoute requiredPermission="BusinessManage">
+          <Business />
+        </ProtectedRoute>
+      )
     },
     {
       path: '/driver/map',
-      element: <DriverMapDashboard />
+      element: (
+        <ProtectedRoute requiredPermission="DriverMaps">
+          <DriverMapDashboard />
+        </ProtectedRoute>
+      )
     }
     // {
     //   path: 'typography',

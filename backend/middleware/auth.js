@@ -18,7 +18,7 @@ exports.authMiddle = async (req, res, next) => {
     const decoded = jwt.verify(token, "moinSecret");
 
     // req.user = await User.findById(decoded.user_id);
-    req.user = await User.findById(decoded.user_id);
+    req.user = await User.findById(decoded.user_id) || await Admin.findById(decoded.user_id);
     req.normalUser = await UserNormal.findById(decoded.user_id);
 
     next();

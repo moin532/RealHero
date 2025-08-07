@@ -19,12 +19,16 @@ const {
   addComment,
   getComments,
   deleteComment,
+  getUnseenProducts,
+  markVideoAsViewed,
 } = require("../controller/myVideoController");
 const upload = require("../utils/multer");
 
 router.route("/video/new").post(authMiddle, createProduct);
 
 router.route("/video/all").get(getAllProducts);
+router.route("/video/unseen").post(getUnseenProducts);
+router.route("/video/mark-viewed").post(authMiddle, markVideoAsViewed);
 router.route("/toggle/like/:id").put(authMiddle, toggleLike);
 
 router.route("/admin/products").get(authMiddle, getAllAdminPrd);

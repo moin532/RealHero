@@ -5,6 +5,7 @@ import router from 'routes';
 
 // project imports
 import NavigationScroll from 'layout/NavigationScroll';
+import { UserProvider } from 'contexts/UserContext';
 
 import ThemeCustomization from 'themes';
 
@@ -15,11 +16,13 @@ import ThemeCustomization from 'themes';
 export default function App() {
   return (
     <ThemeCustomization>
-      <NavigationScroll>
-        <>
-          <RouterProvider router={router} />
-        </>
-      </NavigationScroll>
+      <UserProvider>
+        <NavigationScroll>
+          <>
+            <RouterProvider router={router} />
+          </>
+        </NavigationScroll>
+      </UserProvider>
     </ThemeCustomization>
   );
 }
